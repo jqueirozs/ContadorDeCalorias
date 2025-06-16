@@ -1,0 +1,78 @@
+Você vai criar a estrutura de um aplicativo web chamado **Emagrecimento Inteligente**, que funciona como uma "clínica online" para acompanhamento de tratamento de emagrecimento.
+
+
+
+
+### Funcionalidades principais:
+
+1. **Dashboard Inicial (Home)**
+
+   * Mostra informações do progresso atual do paciente.
+   * Dados como peso atual, progresso no tratamento, pontuação acumulada, número de exercícios concluídos, refeições registradas, etc.
+
+2. **Área de Conteúdo (Curso)**
+
+   * Local para assistir os vídeos do método, organizados por módulos.
+   * Marcação de progresso (vídeos assistidos).
+
+3. **Comunidade (Fórum)**
+
+   * Espaço de interação entre os participantes.
+   * Tópicos, comentários, respostas e likes.
+
+4. **Academia da Mente (Exercícios de Autoprogramação)**
+
+   * Sistema diário de 10 exercícios no formato de *cloze test* (preenchimento de palavras faltantes em frases).
+   * Seleciona um novo conjunto de exercícios todo dia. 
+   * Registro de quantos exercícios foram concluídos.
+   * Os exercícios serão puxados de um banco de exercícios existente.
+
+
+5. **Espelho do Comportamento**
+
+   * Formulário diário com perguntas sobre comportamento alimentar, emocional, desafios do dia, etc.
+   * Dados ficam armazenados e visíveis no dashboard de histórico.
+
+6. **Registro de Refeições**
+
+   * Formulário para registrar:
+
+     * Tipo de refeição (Café, Almoço, Jantar, Lanche, Ceia, etc.)
+     * Horário
+     * Alimentos consumidos (campo livre ou lista selecionável)
+   * Histórico de refeições visível para o usuário.
+
+7. **Dashboard de Evolução**
+
+   * Histórico de peso, progresso dos exercícios, preenchimento do espelho e registros alimentares.
+   * Gráficos de evolução.
+   * Geração de insights via IA, como sugestões, padrões comportamentais e alertas.
+
+8. **Sistema de Pontuação e Gamificação**
+
+   * Usuário acumula pontos ao:
+
+     * Preencher o espelho do comportamento.
+     * Completar os exercícios da Academia da Mente.
+     * Registrar refeições.
+     * Assistir aos vídeos do curso.
+   * Pontuação visível no dashboard.
+
+### Requisitos de Interface:
+
+* Layout limpo, minimalista e intuitivo.
+* Menu lateral ou superior para acesso às áreas: Dashboard, Curso, Comunidade, Academia da Mente, Espelho, Refeições, Evolução.
+
+### Backend:
+
+* Banco de dados para armazenar:
+
+  * Dados dos usuários.
+  * Progresso no curso.
+  * Dados dos exercícios.
+  * Dados dos espelhos do comportamento.
+  * Registros de refeições.
+  * Pontuação.
+* Sistema de autenticação (login e senha).
+
+
