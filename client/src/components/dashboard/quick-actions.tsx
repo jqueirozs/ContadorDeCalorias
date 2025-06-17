@@ -17,14 +17,14 @@ export default function QuickActions() {
         <CardContent className="space-y-3">
           <Button 
             onClick={() => setShowMealForm(true)}
-            className="w-full flex items-center space-x-3 p-3 bg-primary text-white hover:bg-primary/90"
+            className="w-full flex items-center space-x-3 p-3 bg-primary text-white hover:bg-primary/90 mt-[20px] mb-[20px]"
           >
             <Plus className="w-4 h-4" />
             <span className="font-medium">Registrar Refeição</span>
           </Button>
           
           <Link href="/espelho">
-            <Button className="w-full flex items-center space-x-3 p-3 bg-secondary text-white hover:bg-secondary/90">
+            <Button className="w-full flex items-center space-x-3 p-3 bg-secondary text-white hover:bg-secondary/90 mt-[20px] mb-[20px]">
               <ClipboardCheck className="w-4 h-4" />
               <span className="font-medium">Preencher Espelho</span>
             </Button>
