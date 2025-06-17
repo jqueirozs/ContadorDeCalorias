@@ -31,15 +31,15 @@ export default function WeightForm({ isOpen, onClose }: WeightFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/weight"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
-      
+
       setWeight("");
       setNotes("");
       setPhotoFile(null);
       setPhotoPreview(null);
-      
+
       setShowPointsAnimation(true);
       onClose();
-      
+
       toast({
         title: "Peso registrado!",
         description: "Seu peso foi registrado com sucesso e você ganhou 25 pontos!",
@@ -69,7 +69,7 @@ export default function WeightForm({ isOpen, onClose }: WeightFormProps) {
     const file = e.target.files?.[0];
     if (file) {
       setPhotoFile(file);
-      
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setPhotoPreview(e.target?.result as string);
@@ -100,7 +100,7 @@ export default function WeightForm({ isOpen, onClose }: WeightFormProps) {
     }
 
     const today = new Date().toISOString().split('T')[0];
-    
+
     let photoUrl;
     if (photoFile) {
       try {
@@ -113,9 +113,9 @@ export default function WeightForm({ isOpen, onClose }: WeightFormProps) {
         });
       }
     }
-    
+
     createWeightMutation.mutate({
-      weight: parseFloat(weight),
+      weight: parseFloat(weight).toString(),
       notes: notes.trim() || undefined,
       photoUrl,
       date: today,
@@ -164,7 +164,7 @@ export default function WeightForm({ isOpen, onClose }: WeightFormProps) {
                   onChange={handlePhotoChange}
                   className="w-full"
                 />
-                
+
                 {photoPreview && (
                   <div className="relative">
                     <img 

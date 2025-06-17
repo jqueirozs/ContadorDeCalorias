@@ -251,6 +251,13 @@ export const insertMealSchema = createInsertSchema(meals).omit({
 export const insertWeightEntrySchema = createInsertSchema(weightEntries).omit({
   id: true,
   createdAt: true,
+}).extend({
+  weight: z.union([z.string(), z.number()]).transform((val) => {
+    if (typeof val === 'string') {
+      return val;
+    }
+    return val.toString();
+  }),
 });
 
 // Types
