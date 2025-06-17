@@ -134,7 +134,6 @@ export default function Exercises() {
   return (
     <div className="flex h-screen bg-neutral-50">
       <Sidebar />
-      
       <div className="flex-1 ml-64 overflow-auto">
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
@@ -232,7 +231,7 @@ export default function Exercises() {
                       <Brain className="w-5 h-5 mr-2 text-primary" />
                       Exercício {currentExerciseIndex + 1} de {dailyExercises.length}
                     </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-normal bg-[#0da686] text-[#ffffff] pt-[8px] pb-[8px] pl-[20px] pr-[20px] text-left">
                       {currentExercise?.exercise?.category || 'Mindset'}
                     </span>
                   </CardTitle>
