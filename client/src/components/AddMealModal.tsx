@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { isUnauthorizedError } from "@/lib/authUtils";
+import { apiRequest } from "@/hooks/lib/queryClient";
+import { isUnauthorizedError } from "@/hooks/lib/authUtils";
 
 interface AddMealModalProps {
   open: boolean;
