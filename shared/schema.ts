@@ -83,7 +83,9 @@ export const forumComments = pgTable("forum_comments", {
 export const exercises = pgTable("exercises", {
   id: serial("id").primaryKey(),
   question: text("question").notNull(),
-  answer: varchar("answer", { length: 100 }).notNull(),
+  answer: varchar("answer", { length: 100 }),
+  options: jsonb("options"),
+  correctOption: integer("correct_option"),
   category: varchar("category", { length: 50 }),
   difficulty: integer("difficulty").default(1), // 1-5
   createdAt: timestamp("created_at").defaultNow(),
@@ -111,6 +113,12 @@ export const behaviorReflections = pgTable("behavior_reflections", {
   challenges: text("challenges"),
   achievements: text("achievements"),
   notes: text("notes"),
+  drankEnoughWater: boolean("drank_enough_water"),
+  ateMindfully: boolean("ate_mindfully"),
+  exercisedToday: boolean("exercised_today"),
+  sleptWell: boolean("slept_well"),
+  managedStress: boolean("managed_stress"),
+  avoidedEmotionalEating: boolean("avoided_emotional_eating"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -120,6 +128,7 @@ export const meals = pgTable("meals", {
   type: varchar("type", { length: 50 }).notNull(), // breakfast, lunch, dinner, snack, supper
   time: varchar("time", { length: 5 }).notNull(), // HH:MM format
   foods: text("foods").notNull(),
+  calories: integer("calories"),
   date: date("date").notNull(),
   points: integer("points").default(0),
   createdAt: timestamp("created_at").defaultNow(),
@@ -131,6 +140,7 @@ export const weightEntries = pgTable("weight_entries", {
   weight: decimal("weight", { precision: 5, scale: 2 }).notNull(),
   date: date("date").notNull(),
   notes: text("notes"),
+  photoUrl: varchar("photo_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
