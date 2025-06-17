@@ -26,7 +26,7 @@ export default function QuickActions() {
           <Link href="/espelho">
             <Button className="w-full flex items-center space-x-3 p-3 bg-secondary text-white hover:bg-secondary/90 mt-[20px] mb-[20px]">
               <ClipboardCheck className="w-4 h-4" />
-              <span className="font-medium">Preencher Espelho</span>
+              <span className="font-medium">Preencher Espelho do Comportamento</span>
             </Button>
           </Link>
           

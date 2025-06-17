@@ -19,12 +19,12 @@ export function Sidebar() {
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: BarChart3 },
-    { name: "Curso", href: "/course", icon: PlayCircle },
+    { name: "Conteúdo", href: "/course", icon: PlayCircle },
     { name: "Comunidade", href: "/community", icon: Users },
     { name: "Academia da Mente", href: "/exercises", icon: Brain },
-    { name: "Espelho", href: "/reflection", icon: FlipHorizontal2 },
+    { name: "Espelho do Comportamento", href: "/reflection", icon: FlipHorizontal2 },
     { name: "Refeições", href: "/meals", icon: Utensils },
-    { name: "Evolução", href: "/evolution", icon: TrendingUp },
+    { name: "Minha Evolução", href: "/evolution", icon: TrendingUp },
   ];
 
   return (
