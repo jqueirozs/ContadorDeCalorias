@@ -60,7 +60,7 @@ export default function Dashboard() {
     <div className="flex h-screen bg-neutral-50">
       <Sidebar />
       
-      <div className="flex-1 ml-64 overflow-auto">
+      <div className="flex-1 lg:ml-64 overflow-auto">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">

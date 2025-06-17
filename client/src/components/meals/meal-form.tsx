@@ -20,9 +20,10 @@ export default function MealForm({ isOpen, onClose }: MealFormProps) {
   const [mealType, setMealType] = useState("");
   const [time, setTime] = useState("");
   const [foods, setFoods] = useState("");
+  const [calories, setCalories] = useState("");
 
   const createMealMutation = useMutation({
-    mutationFn: async (data: { type: string; time: string; foods: string; date: string }) => {
+    mutationFn: async (data: { type: string; time: string; foods: string; calories?: number; date: string }) => {
       return await apiRequest("POST", "/api/meals", data);
     },
     onSuccess: () => {
@@ -33,6 +34,7 @@ export default function MealForm({ isOpen, onClose }: MealFormProps) {
       setMealType("");
       setTime("");
       setFoods("");
+      setCalories("");
       onClose();
       
       toast({
@@ -78,6 +80,7 @@ export default function MealForm({ isOpen, onClose }: MealFormProps) {
       type: mealType,
       time,
       foods: foods.trim(),
+      calories: calories ? parseInt(calories) : undefined,
       date: today,
     });
   };
@@ -139,6 +142,21 @@ export default function MealForm({ isOpen, onClose }: MealFormProps) {
               onChange={(e) => setFoods(e.target.value)}
               placeholder="Descreva os alimentos consumidos..."
               rows={4}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="calories" className="block text-sm font-medium text-neutral-700 mb-2">
+              Calorias Totais (opcional)
+            </Label>
+            <Input
+              id="calories"
+              type="number"
+              value={calories}
+              onChange={(e) => setCalories(e.target.value)}
+              placeholder="Ex: 450"
+              min="0"
               className="w-full"
             />
           </div>
