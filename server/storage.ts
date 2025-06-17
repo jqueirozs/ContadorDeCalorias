@@ -261,6 +261,7 @@ export class DatabaseStorage implements IStorage {
         exerciseId: dailyExercises.exerciseId,
         date: dailyExercises.date,
         userAnswer: dailyExercises.userAnswer,
+        selectedOption: dailyExercises.selectedOption,
         correct: dailyExercises.correct,
         completedAt: dailyExercises.completedAt,
         createdAt: dailyExercises.createdAt,
@@ -421,6 +422,162 @@ export class DatabaseStorage implements IStorage {
         correctOption: 0,
         category: "Gestão da Ansiedade",
         difficulty: 3,
+      },
+      {
+        question: "Qual é o primeiro passo para criar uma relação saudável com a comida?",
+        answer: "Comer devagar e prestar atenção aos sabores",
+        options: [
+          "Comer devagar e prestar atenção aos sabores",
+          "Contar cada caloria consumida",
+          "Evitar completamente doces e carboidratos",
+          "Comer apenas em horários fixos"
+        ],
+        correctOption: 0,
+        category: "Alimentação Consciente",
+        difficulty: 2,
+      },
+      {
+        question: "Como você deve interpretar as oscilações de peso na balança?",
+        answer: "Como variações naturais que não definem meu progresso",
+        options: [
+          "Como variações naturais que não definem meu progresso",
+          "Como sinais de que devo comer menos",
+          "Como fracassos pessoais",
+          "Como motivos para desistir"
+        ],
+        correctOption: 0,
+        category: "Relação com Balança",
+        difficulty: 2,
+      },
+      {
+        question: "Qual é a melhor estratégia para lidar com situações sociais que envolvem comida?",
+        answer: "Planejar antecipadamente e fazer escolhas conscientes",
+        options: [
+          "Planejar antecipadamente e fazer escolhas conscientes",
+          "Evitar completamente eventos sociais",
+          "Comer tudo sem pensar para não ofender",
+          "Fingir que não tenho fome"
+        ],
+        correctOption: 0,
+        category: "Situações Sociais",
+        difficulty: 3,
+      },
+      {
+        question: "Como transformar exercícios físicos em hábitos prazerosos?",
+        answer: "Escolher atividades que realmente me dão prazer",
+        options: [
+          "Escolher atividades que realmente me dão prazer",
+          "Forçar-me a fazer apenas exercícios intensos",
+          "Exercitar-me como castigo pelos excessos",
+          "Fazer sempre os mesmos exercícios"
+        ],
+        correctOption: 0,
+        category: "Exercícios Físicos",
+        difficulty: 1,
+      },
+      {
+        question: "Qual é a importância do sono na jornada de emagrecimento?",
+        answer: "Dormir bem regula hormônios da fome e saciedade",
+        options: [
+          "Dormir bem regula hormônios da fome e saciedade",
+          "Dormir é perda de tempo que poderia usar exercitando",
+          "O sono não tem relação com o peso",
+          "Dormir demais engorda"
+        ],
+        correctOption: 0,
+        category: "Qualidade do Sono",
+        difficulty: 2,
+      },
+      {
+        question: "Como lidar com plateaus de peso (quando o peso estagnar)?",
+        answer: "Manter a consistência e focar em outros indicadores de saúde",
+        options: [
+          "Manter a consistência e focar em outros indicadores de saúde",
+          "Reduzir drasticamente as calorias",
+          "Desistir porque não está funcionando",
+          "Aumentar exercícios para 3 horas por dia"
+        ],
+        correctOption: 0,
+        category: "Superação de Obstáculos",
+        difficulty: 3,
+      },
+      {
+        question: "Qual é a melhor forma de lidar com críticas sobre seu corpo?",
+        answer: "Lembrar que minha jornada é única e pessoal",
+        options: [
+          "Lembrar que minha jornada é única e pessoal",
+          "Aceitar todas as críticas como verdades",
+          "Ficar irritado e descontar na comida",
+          "Mudar meus objetivos para agradar outros"
+        ],
+        correctOption: 0,
+        category: "Autoestima",
+        difficulty: 2,
+      },
+      {
+        question: "Como manter a motivação nos dias difíceis?",
+        answer: "Lembrar dos motivos pelos quais comecei esta jornada",
+        options: [
+          "Lembrar dos motivos pelos quais comecei esta jornada",
+          "Forçar-me a ser positivo o tempo todo",
+          "Ignorar os sentimentos negativos",
+          "Desistir quando não me sinto motivado"
+        ],
+        correctOption: 0,
+        category: "Motivação",
+        difficulty: 2,
+      },
+      {
+        question: "Qual é a atitude mais saudável em relação aos carboidratos?",
+        answer: "Incluí-los de forma equilibrada na alimentação",
+        options: [
+          "Incluí-los de forma equilibrada na alimentação",
+          "Eliminar completamente todos os carboidratos",
+          "Comer carboidratos apenas nos fins de semana",
+          "Ter medo e culpa ao consumir carboidratos"
+        ],
+        correctOption: 0,
+        category: "Relação com Comida",
+        difficulty: 2,
+      },
+      {
+        question: "Como desenvolver uma autoimagem mais positiva?",
+        answer: "Praticar gratidão pelo que meu corpo pode fazer",
+        options: [
+          "Praticar gratidão pelo que meu corpo pode fazer",
+          "Focar apenas nos defeitos para melhorar",
+          "Comparar-me sempre com pessoas mais magras",
+          "Evitar olhar no espelho"
+        ],
+        correctOption: 0,
+        category: "Autoimagem",
+        difficulty: 1,
+      },
+      {
+        question: "Qual é o papel das emoções no processo de emagrecimento?",
+        answer: "Reconhecê-las e processá-las sem usar comida",
+        options: [
+          "Reconhecê-las e processá-las sem usar comida",
+          "Ignorar todas as emoções negativas",
+          "Usar comida sempre que me sentir triste",
+          "Eliminar todas as emoções da minha vida"
+        ],
+        correctOption: 0,
+        category: "Inteligência Emocional",
+        difficulty: 3,
+      },
+      {
+        question: "Como estabelecer metas realistas para o emagrecimento?",
+        answer: "Focar em mudanças de hábitos pequenas e sustentáveis",
+        options: [
+          "Focar em mudanças de hábitos pequenas e sustentáveis",
+          "Estabelecer metas de perder 10kg por mês",
+          "Copiar dietas de famosos",
+          "Não estabelecer metas para não se frustrar"
+        ],
+        correctOption: 0,
+        category: "Estabelecimento de Metas",
+        difficulty: 1,
       }
     ];
 
@@ -431,9 +588,11 @@ export class DatabaseStorage implements IStorage {
     const [exercise] = await db.select().from(exercises).where(eq(exercises.id, exerciseId));
 
     let correct = false;
+    const selectedOption = parseInt(answer);
+    
     if (exercise?.correctOption !== null && exercise?.correctOption !== undefined) {
       // Multiple choice question
-      correct = parseInt(answer) === exercise.correctOption;
+      correct = selectedOption === exercise.correctOption;
     } else if (exercise?.answer) {
       // Text-based question
       correct = exercise.answer.toLowerCase() === answer.toLowerCase();
@@ -443,6 +602,7 @@ export class DatabaseStorage implements IStorage {
       .update(dailyExercises)
       .set({
         userAnswer: answer,
+        selectedOption: selectedOption,
         correct,
         completedAt: new Date(),
       })

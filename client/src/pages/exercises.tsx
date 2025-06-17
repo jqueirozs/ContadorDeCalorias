@@ -21,6 +21,15 @@ const categoryConfig = {
   "Relação com Comida": { icon: Lightbulb, color: "bg-orange-500", bgColor: "bg-orange-50", textColor: "text-orange-700" },
   "Autoestima": { icon: Award, color: "bg-pink-500", bgColor: "bg-pink-50", textColor: "text-pink-700" },
   "Gestão da Ansiedade": { icon: Brain, color: "bg-indigo-500", bgColor: "bg-indigo-50", textColor: "text-indigo-700" },
+  "Alimentação Consciente": { icon: Lightbulb, color: "bg-teal-500", bgColor: "bg-teal-50", textColor: "text-teal-700" },
+  "Relação com Balança": { icon: Award, color: "bg-slate-500", bgColor: "bg-slate-50", textColor: "text-slate-700" },
+  "Situações Sociais": { icon: Heart, color: "bg-emerald-500", bgColor: "bg-emerald-50", textColor: "text-emerald-700" },
+  "Exercícios Físicos": { icon: Zap, color: "bg-lime-500", bgColor: "bg-lime-50", textColor: "text-lime-700" },
+  "Qualidade do Sono": { icon: Shield, color: "bg-violet-500", bgColor: "bg-violet-50", textColor: "text-violet-700" },
+  "Superação de Obstáculos": { icon: Star, color: "bg-amber-500", bgColor: "bg-amber-50", textColor: "text-amber-700" },
+  "Autoimagem": { icon: Sparkles, color: "bg-fuchsia-500", bgColor: "bg-fuchsia-50", textColor: "text-fuchsia-700" },
+  "Inteligência Emocional": { icon: Brain, color: "bg-cyan-500", bgColor: "bg-cyan-50", textColor: "text-cyan-700" },
+  "Estabelecimento de Metas": { icon: Star, color: "bg-red-500", bgColor: "bg-red-50", textColor: "text-red-700" },
 };
 
 export default function Exercises() {
