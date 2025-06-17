@@ -84,9 +84,9 @@ export const exercises = pgTable("exercises", {
   id: serial("id").primaryKey(),
   question: text("question").notNull(),
   answer: varchar("answer", { length: 100 }),
-  options: jsonb("options").$type<string[]>().notNull(), // Array of 4 options
-  correctOption: integer("correct_option").notNull(), // Index 0-3 of correct option
-  category: varchar("category", { length: 50 }).notNull(),
+  options: jsonb("options"),
+  correctOption: integer("correct_option"),
+  category: varchar("category", { length: 50 }),
   difficulty: integer("difficulty").default(1), // 1-5
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -97,7 +97,6 @@ export const dailyExercises = pgTable("daily_exercises", {
   exerciseId: integer("exercise_id").notNull().references(() => exercises.id),
   date: date("date").notNull(),
   userAnswer: varchar("user_answer", { length: 100 }),
-  selectedOption: integer("selected_option"), // Index of selected option
   correct: boolean("correct"),
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow(),
