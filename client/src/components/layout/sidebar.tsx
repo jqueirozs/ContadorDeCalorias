@@ -44,9 +44,9 @@ export default function Sidebar() {
       )}
 
       {/* Sidebar */}
-      <div className={`w-64 bg-white shadow-lg flex flex-col h-full z-40 transform transition-transform duration-300 ease-in-out ${
-        isMobileMenuOpen ? 'translate-x-0 fixed' : '-translate-x-full fixed'
-      } lg:translate-x-0 lg:relative lg:transform-none`}>
+      <div className={`w-64 bg-white shadow-lg flex flex-col min-h-screen z-40 transform transition-transform duration-300 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0 fixed h-screen' : '-translate-x-full fixed h-screen'
+      } lg:h-auto lg:translate-x-0 lg:relative lg:transform-none`}>
         {/* Logo Section */}
         <div className="p-6 border-b border-neutral-200">
           <div className="flex items-center space-x-3">

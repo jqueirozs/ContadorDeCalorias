@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import Sidebar from "@/components/layout/sidebar";
 import MealForm from "@/components/meals/meal-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,10 +85,8 @@ export default function Meals() {
   const totalPointsToday = todayMeals.reduce((sum: number, meal: any) => sum + (meal.points || 0), 0);
 
   return (
-    <div className="flex h-screen bg-neutral-50">
-      <Sidebar />
-      
-      <div className="flex-1 ml-64 overflow-auto">
+    <>
+      <div className="overflow-auto">
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -313,7 +310,7 @@ export default function Meals() {
       <MealForm 
         isOpen={showMealForm} 
         onClose={() => setShowMealForm(false)} 
-      />
-    </div>
+        />
+    </>
   );
 }

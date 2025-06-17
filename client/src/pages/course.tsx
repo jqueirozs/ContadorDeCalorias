@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import Sidebar from "@/components/layout/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -44,10 +43,7 @@ export default function Course() {
   const progressPercentage = modules ? (completedModules.length / modules.length) * 100 : 0;
 
   return (
-    <div className="flex h-screen bg-neutral-50">
-      <Sidebar />
-      
-      <div className="flex-1 ml-64 overflow-auto">
+    <div className="overflow-auto">
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -196,6 +192,5 @@ export default function Course() {
           </Card>
         </main>
       </div>
-    </div>
   );
 }

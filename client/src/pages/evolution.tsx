@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import Sidebar from "@/components/layout/sidebar";
 import WeightForm from "@/components/weight-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -103,10 +102,8 @@ export default function Evolution() {
   };
 
   return (
-    <div className="flex h-screen bg-neutral-50">
-      <Sidebar />
-      
-      <div className="flex-1 lg:ml-64 overflow-auto">
+    <>
+      <div className="overflow-auto">
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -408,10 +405,10 @@ export default function Evolution() {
         </main>
       </div>
       
-      <WeightForm 
-        isOpen={showWeightForm} 
-        onClose={() => setShowWeightForm(false)} 
+      <WeightForm
+        isOpen={showWeightForm}
+        onClose={() => setShowWeightForm(false)}
       />
-    </div>
+    </>
   );
 }
