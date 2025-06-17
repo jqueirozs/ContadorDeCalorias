@@ -301,7 +301,15 @@ export class DatabaseStorage implements IStorage {
 
   async submitExerciseAnswer(exerciseId: number, userId: string, answer: string, date: string): Promise<DailyExercise> {
     const [exercise] = await db.select().from(exercises).where(eq(exercises.id, exerciseId));
-    const correct = exercise?.answer.toLowerCase() === answer.toLowerCase();
+    
+    let correct = false;
+    if (exercise?.correctOption !== null && exercise?.correctOption !== undefined) {
+      // Multiple choice question
+      correct = parseInt(answer) === exercise.correctOption;
+    } else if (exercise?.answer) {
+      // Text-based question
+      correct = exercise.answer.toLowerCase() === answer.toLowerCase();
+    }
 
     const [updated] = await db
       .update(dailyExercises)

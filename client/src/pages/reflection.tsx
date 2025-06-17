@@ -26,6 +26,12 @@ export default function Reflection() {
     challenges: "",
     achievements: "",
     notes: "",
+    drankEnoughWater: null,
+    ateMindfully: null,
+    exercisedToday: null,
+    sleptWell: null,
+    managedStress: null,
+    avoidedEmotionalEating: null,
   });
 
   useEffect(() => {
@@ -97,6 +103,12 @@ export default function Reflection() {
         challenges: reflection.challenges || "",
         achievements: reflection.achievements || "",
         notes: reflection.notes || "",
+        drankEnoughWater: reflection.drankEnoughWater,
+        ateMindfully: reflection.ateMindfully,
+        exercisedToday: reflection.exercisedToday,
+        sleptWell: reflection.sleptWell,
+        managedStress: reflection.managedStress,
+        avoidedEmotionalEating: reflection.avoidedEmotionalEating,
       });
     }
   }, [reflection]);
