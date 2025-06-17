@@ -4,7 +4,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import Sidebar from "@/components/layout/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -121,10 +120,7 @@ export default function Community() {
   };
 
   return (
-    <div className="flex h-screen bg-neutral-50">
-      <Sidebar />
-      
-      <div className="flex-1 ml-64 overflow-auto">
+    <div className="overflow-auto">
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -300,6 +296,5 @@ export default function Community() {
           </div>
         </main>
       </div>
-    </div>
   );
 }

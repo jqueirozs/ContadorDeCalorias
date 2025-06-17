@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import Sidebar from "@/components/layout/sidebar";
 import StatsCards from "@/components/dashboard/stats-cards";
 import WeightChart from "@/components/dashboard/weight-chart";
 import QuickActions from "@/components/dashboard/quick-actions";
@@ -57,9 +56,7 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="flex h-screen bg-neutral-50">
-      <Sidebar />
-      <div className="flex-1 lg:ml-64 overflow-auto">
+    <div className="overflow-auto">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
@@ -260,6 +257,5 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
-    </div>
   );
 }
