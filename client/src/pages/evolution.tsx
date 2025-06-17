@@ -3,17 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import Sidebar from "@/components/layout/sidebar";
+import WeightForm from "@/components/weight-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { TrendingUp, Brain, Utensils, Star, Calendar, Lightbulb } from "lucide-react";
+import { TrendingUp, Brain, Utensils, Star, Calendar, Lightbulb, Plus, Scale } from "lucide-react";
 
 export default function Evolution() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
   const [timeRange, setTimeRange] = useState("30");
+  const [showWeightForm, setShowWeightForm] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -104,23 +106,29 @@ export default function Evolution() {
     <div className="flex h-screen bg-neutral-50">
       <Sidebar />
       
-      <div className="flex-1 ml-64 overflow-auto">
+      <div className="flex-1 lg:ml-64 overflow-auto">
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-neutral-800">Evolução e Progresso</h2>
               <p className="text-neutral-600 mt-1">Acompanhe sua jornada de transformação</p>
             </div>
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">7 dias</SelectItem>
-                <SelectItem value="30">30 dias</SelectItem>
-                <SelectItem value="90">90 dias</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center space-x-3">
+              <Button onClick={() => setShowWeightForm(true)} className="bg-primary hover:bg-primary/90">
+                <Scale className="w-4 h-4 mr-2" />
+                Registrar Peso
+              </Button>
+              <Select value={timeRange} onValueChange={setTimeRange}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">7 dias</SelectItem>
+                  <SelectItem value="30">30 dias</SelectItem>
+                  <SelectItem value="90">90 dias</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </header>
 
@@ -399,6 +407,11 @@ export default function Evolution() {
           </div>
         </main>
       </div>
+      
+      <WeightForm 
+        isOpen={showWeightForm} 
+        onClose={() => setShowWeightForm(false)} 
+      />
     </div>
   );
 }
