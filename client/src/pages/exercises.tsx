@@ -14,7 +14,7 @@ export default function Exercises() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState("");
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const today = new Date().toISOString().split('T')[0];
@@ -88,7 +88,7 @@ export default function Exercises() {
   const progressPercentage = dailyExercises ? (completedExercises.length / dailyExercises.length) * 100 : 0;
 
   const handleSubmitAnswer = () => {
-    if (!userAnswer || !currentExercise) {
+    if (selectedOptionIndex === null || !currentExercise) {
       toast({
         title: "Selecione uma opção",
         description: "Por favor, escolha uma das opções antes de enviar.",
@@ -99,14 +99,14 @@ export default function Exercises() {
 
     submitAnswerMutation.mutate({
       exerciseId: currentExercise.exerciseId,
-      answer: userAnswer,
+      answer: selectedOptionIndex.toString(),
       date: today,
     });
   };
 
   const handleNextExercise = () => {
     setShowResult(false);
-    setUserAnswer("");
+    setSelectedOptionIndex(null);
     setIsCorrect(false);
     
     // Find next incomplete exercise
@@ -125,9 +125,9 @@ export default function Exercises() {
     }
   };
 
-  const handleOptionSelect = (selectedOption: string) => {
+  const handleOptionSelect = (index: number) => {
     if (showResult || currentExercise?.completedAt) return;
-    setUserAnswer(selectedOption);
+    setSelectedOptionIndex(index);
   };
 
   return (
@@ -246,12 +246,12 @@ export default function Exercises() {
                           {currentExercise.exercise.options?.map((option: string, index: number) => (
                             <Button
                               key={index}
-                              variant={userAnswer === option ? "default" : "outline"}
-                              onClick={() => handleOptionSelect(option)}
+                              variant={selectedOptionIndex === index ? "default" : "outline"}
+                              onClick={() => handleOptionSelect(index)}
                               disabled={showResult || currentExercise?.completedAt}
                               className={`w-full justify-start text-left h-auto py-4 px-6 ${
-                                userAnswer === option 
-                                  ? 'bg-primary text-white hover:bg-primary/90' 
+                                selectedOptionIndex === index
+                                  ? 'bg-primary text-white hover:bg-primary/90'
                                   : 'bg-white hover:bg-neutral-50 text-neutral-800'
                               }`}
                             >
@@ -279,10 +279,14 @@ export default function Exercises() {
                             </p>
                           </div>
                           <p className={`text-sm ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
-                            {isCorrect 
-                              ? `Excelente! A resposta correta é "${currentExercise.exercise.answer}". Você ganhou 15 pontos!`
-                              : `A resposta correta é "${currentExercise.exercise.answer}". Você ganhou 5 pontos pela tentativa!`
-                            }
+                            {(() => {
+                              const correctText = currentExercise.exercise.options
+                                ? currentExercise.exercise.options[currentExercise.exercise.correctOption]
+                                : currentExercise.exercise.answer;
+                              return isCorrect
+                                ? `Excelente! A resposta correta é "${correctText}". Você ganhou 15 pontos!`
+                                : `A resposta correta é "${correctText}". Você ganhou 5 pontos pela tentativa!`;
+                            })()}
                           </p>
                         </div>
                       )}
@@ -291,7 +295,7 @@ export default function Exercises() {
                         <div className="flex space-x-3">
                           <Button
                             onClick={handleSubmitAnswer}
-                            disabled={submitAnswerMutation.isPending || !userAnswer}
+                            disabled={submitAnswerMutation.isPending || selectedOptionIndex === null}
                             className="flex-1 bg-primary hover:bg-primary/90"
                           >
                             {submitAnswerMutation.isPending ? "Enviando..." : "Enviar Resposta"}

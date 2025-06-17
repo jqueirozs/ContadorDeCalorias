@@ -268,7 +268,8 @@ export class DatabaseStorage implements IStorage {
       })
       .from(dailyExercises)
       .leftJoin(exercises, eq(dailyExercises.exerciseId, exercises.id))
-      .where(and(eq(dailyExercises.userId, userId), eq(dailyExercises.date, date)));
+      .where(and(eq(dailyExercises.userId, userId), eq(dailyExercises.date, date)))
+      .orderBy(dailyExercises.id);
   }
 
   async generateDailyExercises(userId: string, date: string): Promise<DailyExercise[]> {
@@ -305,7 +306,10 @@ export class DatabaseStorage implements IStorage {
     let correct = false;
     if (exercise?.correctOption !== null && exercise?.correctOption !== undefined) {
       // Multiple choice question
-      correct = parseInt(answer) === exercise.correctOption;
+      const index = parseInt(answer);
+      if (!isNaN(index) && Array.isArray(exercise.options)) {
+        correct = index === exercise.correctOption;
+      }
     } else if (exercise?.answer) {
       // Text-based question
       correct = exercise.answer.toLowerCase() === answer.toLowerCase();
