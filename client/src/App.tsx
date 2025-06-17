@@ -13,6 +13,7 @@ import Exercises from "@/pages/exercises";
 import Reflection from "@/pages/reflection";
 import Meals from "@/pages/meals";
 import Evolution from "@/pages/evolution";
+import Sidebar from "@/components/Sidebar"; // Import Sidebar
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -42,7 +43,21 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <Router />
+        <div className="flex min-h-screen bg-neutral-50">
+            <Sidebar />
+            <main className="flex-1 p-4 lg:p-6">
+              <Switch>
+                <Route path="/" component={Dashboard} />
+                <Route path="/curso" component={Course} />
+                <Route path="/comunidade" component={Community} />
+                <Route path="/exercicios" component={Exercises} />
+                <Route path="/espelho" component={Reflection} />
+                <Route path="/refeicoes" component={Meals} />
+                <Route path="/evolucao" component={Evolution} />
+                <Route component={NotFound} />
+              </Switch>
+            </main>
+        </div>
       </TooltipProvider>
     </QueryClientProvider>
   );
