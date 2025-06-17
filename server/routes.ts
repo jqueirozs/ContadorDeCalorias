@@ -178,9 +178,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const exerciseId = parseInt(req.params.id);
-      const { answer, date } = req.body;
+      const { selectedOption, date } = req.body;
       
-      const result = await storage.submitExerciseAnswer(exerciseId, userId, answer, date);
+      const result = await storage.submitExerciseAnswer(exerciseId, userId, selectedOption, date);
       res.json(result);
     } catch (error) {
       console.error("Error submitting exercise answer:", error);

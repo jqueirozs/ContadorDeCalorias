@@ -32,19 +32,19 @@ import {
   type PointsHistory,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, and, gte, lte, sql, count } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
   // User operations (IMPORTANT: mandatory for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
-  
+
   // Course operations
   getCourseModules(): Promise<CourseModule[]>;
   getUserProgress(userId: string): Promise<UserProgress[]>;
   markModuleComplete(userId: string, moduleId: number): Promise<UserProgress>;
-  
+
   // Forum operations
   getForumTopics(limit?: number): Promise<(ForumTopic & { user: User; commentCount: number })[]>;
   getForumTopic(id: number): Promise<(ForumTopic & { user: User }) | undefined>;
@@ -53,33 +53,33 @@ export interface IStorage {
   createComment(comment: InsertForumComment): Promise<ForumComment>;
   likeForumTopic(topicId: number): Promise<void>;
   likeComment(commentId: number): Promise<void>;
-  
+
   // Exercise operations
   getExercises(): Promise<Exercise[]>;
   getDailyExercises(userId: string, date: string): Promise<(DailyExercise & { exercise: Exercise })[]>;
   generateDailyExercises(userId: string, date: string): Promise<DailyExercise[]>;
   submitExerciseAnswer(exerciseId: number, userId: string, answer: string, date: string): Promise<DailyExercise>;
-  
+
   // Behavior reflection operations
   getBehaviorReflection(userId: string, date: string): Promise<BehaviorReflection | undefined>;
   createBehaviorReflection(reflection: InsertBehaviorReflection): Promise<BehaviorReflection>;
   updateBehaviorReflection(id: number, reflection: Partial<InsertBehaviorReflection>): Promise<BehaviorReflection>;
-  
+
   // Meal operations
   getMeals(userId: string, date?: string): Promise<Meal[]>;
   createMeal(meal: InsertMeal): Promise<Meal>;
   getRecentMeals(userId: string, limit?: number): Promise<Meal[]>;
-  
+
   // Weight tracking operations
   getWeightEntries(userId: string, limit?: number): Promise<WeightEntry[]>;
   createWeightEntry(entry: InsertWeightEntry): Promise<WeightEntry>;
   getLatestWeight(userId: string): Promise<WeightEntry | undefined>;
-  
+
   // Points operations
   addPoints(userId: string, activity: string, points: number, date: string): Promise<void>;
   getPointsHistory(userId: string, limit?: number): Promise<PointsHistory[]>;
   getUserTotalPoints(userId: string): Promise<number>;
-  
+
   // Dashboard data
   getDashboardStats(userId: string): Promise<{
     currentWeight: number | null;
@@ -133,10 +133,10 @@ export class DatabaseStorage implements IStorage {
         .set({ completed: true, completedAt: new Date() })
         .where(eq(userProgress.id, existing.id))
         .returning();
-      
+
       // Award points for completing module
       await this.addPoints(userId, "Módulo concluído", 50, new Date().toISOString().split('T')[0]);
-      
+
       return updated;
     } else {
       const [newProgress] = await db
@@ -148,10 +148,10 @@ export class DatabaseStorage implements IStorage {
           completedAt: new Date(),
         })
         .returning();
-      
+
       // Award points for completing module
       await this.addPoints(userId, "Módulo concluído", 50, new Date().toISOString().split('T')[0]);
-      
+
       return newProgress;
     }
   }
@@ -201,10 +201,10 @@ export class DatabaseStorage implements IStorage {
 
   async createForumTopic(topic: InsertForumTopic): Promise<ForumTopic> {
     const [newTopic] = await db.insert(forumTopics).values(topic).returning();
-    
+
     // Award points for creating topic
     await this.addPoints(topic.userId, "Tópico criado", 20, new Date().toISOString().split('T')[0]);
-    
+
     return newTopic;
   }
 
@@ -227,10 +227,10 @@ export class DatabaseStorage implements IStorage {
 
   async createComment(comment: InsertForumComment): Promise<ForumComment> {
     const [newComment] = await db.insert(forumComments).values(comment).returning();
-    
+
     // Award points for commenting
     await this.addPoints(comment.userId, "Comentário criado", 10, new Date().toISOString().split('T')[0]);
-    
+
     return newComment;
   }
 
@@ -271,37 +271,165 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(dailyExercises.userId, userId), eq(dailyExercises.date, date)));
   }
 
-  async generateDailyExercises(userId: string, date: string): Promise<DailyExercise[]> {
-    // Check if exercises already exist for this date
-    const existing = await this.getDailyExercises(userId, date);
-    if (existing.length > 0) {
-      return existing;
+  async generateDailyExercises(userId: string, date: string) {
+    try {
+      // Check if exercises already exist for this date
+      const existing = await db
+        .select()
+        .from(dailyExercises)
+        .where(and(eq(dailyExercises.userId, userId), eq(dailyExercises.date, date)));
+
+      if (existing.length > 0) {
+        return existing;
+      }
+
+      // Create base exercises if they don't exist
+      const exerciseCount = await db.select({ count: count() }).from(exercises);
+      if (exerciseCount[0].count === 0) {
+        await this.createBaseExercises();
+      }
+
+      // Get all available exercises
+      const allExercises = await db.select().from(exercises);
+
+      // Select 10 random exercises for the day
+      const selectedExercises = allExercises
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.min(10, allExercises.length));
+
+      // Create daily exercise entries
+      const dailyExerciseValues = selectedExercises.map(exercise => ({
+        userId,
+        exerciseId: exercise.id,
+        date,
+      }));
+
+      const newDailyExercises = await db
+        .insert(dailyExercises)
+        .values(dailyExerciseValues)
+        .returning();
+
+      return newDailyExercises;
+    } catch (error) {
+      console.error("Error generating daily exercises:", error);
+      throw error;
     }
+  }
 
-    // Get 10 random exercises
-    const allExercises = await db.select().from(exercises);
-    const randomExercises = allExercises
-      .sort(() => Math.random() - 0.5)
-      .slice(0, Math.min(10, allExercises.length));
+  async createBaseExercises() {
+    const baseExercises = [
+      {
+        question: "Qual é a melhor atitude quando você sente vontade de comer por emoção?",
+        answer: "Pausar e respirar antes de decidir",
+        options: [
+          "Pausar e respirar antes de decidir",
+          "Comer imediatamente para se sentir melhor",
+          "Ignorar a fome completamente",
+          "Ficar ansioso e culpado"
+        ],
+        correctOption: 0,
+        category: "Controle Emocional",
+        difficulty: 2,
+      },
+      {
+        question: "Como você deve encarar seu processo de emagrecimento?",
+        answer: "Como uma jornada de autocuidado e amor próprio",
+        options: [
+          "Como uma jornada de autocuidado e amor próprio",
+          "Como uma punição pelo que comi no passado",
+          "Como algo temporário até atingir o peso",
+          "Como uma obrigação social"
+        ],
+        correctOption: 0,
+        category: "Mindset Positivo",
+        difficulty: 1,
+      },
+      {
+        question: "Qual é a principal chave para manter hábitos saudáveis?",
+        answer: "Consistência e paciência consigo mesmo",
+        options: [
+          "Consistência e paciência consigo mesmo",
+          "Fazer dietas extremamente restritivas",
+          "Exercitar-se até a exaustão todos os dias",
+          "Comparar-se constantemente com outros"
+        ],
+        correctOption: 0,
+        category: "Formação de Hábitos",
+        difficulty: 2,
+      },
+      {
+        question: "Como você deve reagir quando comete um 'deslize' na alimentação?",
+        answer: "Aceitar com compaixão e retomar os hábitos saudáveis",
+        options: [
+          "Aceitar com compaixão e retomar os hábitos saudáveis",
+          "Sentir culpa e desistir completamente",
+          "Fazer jejum prolongado para compensar",
+          "Criticar-se duramente por ter falhado"
+        ],
+        correctOption: 0,
+        category: "Autocompaixão",
+        difficulty: 3,
+      },
+      {
+        question: "Qual é a melhor forma de se motivar durante a jornada de emagrecimento?",
+        answer: "Celebrar pequenas vitórias e progressos diários",
+        options: [
+          "Celebrar pequenas vitórias e progressos diários",
+          "Focar apenas no peso final desejado",
+          "Comparar-se com pessoas nas redes sociais",
+          "Criticar-se constantemente para melhorar"
+        ],
+        correctOption: 0,
+        category: "Motivação",
+        difficulty: 1,
+      },
+      {
+        question: "Como você deve ver os alimentos saudáveis?",
+        answer: "Como combustível nutritivo que nutre meu corpo",
+        options: [
+          "Como combustível nutritivo que nutre meu corpo",
+          "Como algo chato que preciso comer para emagrecer",
+          "Como punição pelos meus excessos anteriores",
+          "Como obstáculo para minha felicidade"
+        ],
+        correctOption: 0,
+        category: "Relação com Comida",
+        difficulty: 2,
+      },
+      {
+        question: "Qual pensamento é mais poderoso para o sucesso no emagrecimento?",
+        answer: "Eu mereço ser saudável e me sentir bem",
+        options: [
+          "Eu mereço ser saudável e me sentir bem",
+          "Preciso emagrecer para que outros me aceitem",
+          "Só serei feliz quando atingir meu peso ideal",
+          "Não consigo controlar meus impulsos alimentares"
+        ],
+        correctOption: 0,
+        category: "Autoestima",
+        difficulty: 1,
+      },
+      {
+        question: "Como lidar com a ansiedade que pode levar à compulsão alimentar?",
+        answer: "Praticar técnicas de respiração e mindfulness",
+        options: [
+          "Praticar técnicas de respiração e mindfulness",
+          "Comer doces para se acalmar rapidamente",
+          "Ignorar a ansiedade até ela passar",
+          "Fazer exercícios intensos até cansar"
+        ],
+        correctOption: 0,
+        category: "Gestão da Ansiedade",
+        difficulty: 3,
+      }
+    ];
 
-    // Create daily exercises
-    const dailyExerciseValues = randomExercises.map(exercise => ({
-      userId,
-      exerciseId: exercise.id,
-      date,
-    }));
-
-    const newDailyExercises = await db
-      .insert(dailyExercises)
-      .values(dailyExerciseValues)
-      .returning();
-
-    return newDailyExercises;
+    await db.insert(exercises).values(baseExercises);
   }
 
   async submitExerciseAnswer(exerciseId: number, userId: string, answer: string, date: string): Promise<DailyExercise> {
     const [exercise] = await db.select().from(exercises).where(eq(exercises.id, exerciseId));
-    
+
     let correct = false;
     if (exercise?.correctOption !== null && exercise?.correctOption !== undefined) {
       // Multiple choice question
@@ -348,10 +476,10 @@ export class DatabaseStorage implements IStorage {
 
   async createBehaviorReflection(reflection: InsertBehaviorReflection): Promise<BehaviorReflection> {
     const [newReflection] = await db.insert(behaviorReflections).values(reflection).returning();
-    
+
     // Award points for completing reflection
     await this.addPoints(reflection.userId, "Espelho preenchido", 30, reflection.date);
-    
+
     return newReflection;
   }
 
@@ -367,11 +495,11 @@ export class DatabaseStorage implements IStorage {
   // Meal operations
   async getMeals(userId: string, date?: string): Promise<Meal[]> {
     let query = db.select().from(meals).where(eq(meals.userId, userId));
-    
+
     if (date) {
       query = query.where(and(eq(meals.userId, userId), eq(meals.date, date)));
     }
-    
+
     return await query.orderBy(desc(meals.createdAt));
   }
 
@@ -391,10 +519,10 @@ export class DatabaseStorage implements IStorage {
       .insert(meals)
       .values({ ...meal, points })
       .returning();
-    
+
     // Award points for registering meal
     await this.addPoints(meal.userId, `Refeição registrada: ${meal.type}`, points, meal.date);
-    
+
     return newMeal;
   }
 
@@ -419,16 +547,16 @@ export class DatabaseStorage implements IStorage {
 
   async createWeightEntry(entry: InsertWeightEntry): Promise<WeightEntry> {
     const [newEntry] = await db.insert(weightEntries).values(entry).returning();
-    
+
     // Update user's current weight
     await db
       .update(users)
       .set({ currentWeight: entry.weight, updatedAt: new Date() })
       .where(eq(users.id, entry.userId));
-    
+
     // Award points for tracking weight
     await this.addPoints(entry.userId, "Peso registrado", 25, entry.date);
-    
+
     return newEntry;
   }
 
@@ -488,7 +616,7 @@ export class DatabaseStorage implements IStorage {
     reflectionCompleted: boolean;
   }> {
     const today = new Date().toISOString().split('T')[0];
-    
+
     // Get user data
     const [user] = await db
       .select({

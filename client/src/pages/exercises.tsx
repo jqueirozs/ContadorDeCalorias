@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -7,15 +8,26 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import Sidebar from "@/components/layout/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Brain, CheckCircle, Star, Target } from "lucide-react";
+import { Brain, CheckCircle, Star, Target, Heart, Zap, Shield, Lightbulb, Award, Sparkles } from "lucide-react";
+
+// Category icons and colors mapping
+const categoryConfig = {
+  "Controle Emocional": { icon: Heart, color: "bg-rose-500", bgColor: "bg-rose-50", textColor: "text-rose-700" },
+  "Mindset Positivo": { icon: Sparkles, color: "bg-purple-500", bgColor: "bg-purple-50", textColor: "text-purple-700" },
+  "Formação de Hábitos": { icon: Zap, color: "bg-blue-500", bgColor: "bg-blue-50", textColor: "text-blue-700" },
+  "Autocompaixão": { icon: Shield, color: "bg-green-500", bgColor: "bg-green-50", textColor: "text-green-700" },
+  "Motivação": { icon: Star, color: "bg-yellow-500", bgColor: "bg-yellow-50", textColor: "text-yellow-700" },
+  "Relação com Comida": { icon: Lightbulb, color: "bg-orange-500", bgColor: "bg-orange-50", textColor: "text-orange-700" },
+  "Autoestima": { icon: Award, color: "bg-pink-500", bgColor: "bg-pink-50", textColor: "text-pink-700" },
+  "Gestão da Ansiedade": { icon: Brain, color: "bg-indigo-500", bgColor: "bg-indigo-50", textColor: "text-indigo-700" },
+};
 
 export default function Exercises() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState("");
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const today = new Date().toISOString().split('T')[0];
@@ -40,9 +52,9 @@ export default function Exercises() {
   });
 
   const submitAnswerMutation = useMutation({
-    mutationFn: async (data: { exerciseId: number; answer: string; date: string }) => {
+    mutationFn: async (data: { exerciseId: number; selectedOption: number; date: string }) => {
       return await apiRequest("POST", `/api/exercises/${data.exerciseId}/answer`, {
-        answer: data.answer,
+        selectedOption: data.selectedOption,
         date: data.date,
       });
     },
@@ -89,10 +101,10 @@ export default function Exercises() {
   const progressPercentage = dailyExercises ? (completedExercises.length / dailyExercises.length) * 100 : 0;
 
   const handleSubmitAnswer = () => {
-    if (!userAnswer.trim() || !currentExercise) {
+    if (selectedOption === null || !currentExercise) {
       toast({
-        title: "Resposta vazia",
-        description: "Por favor, digite uma resposta antes de enviar.",
+        title: "Selecione uma resposta",
+        description: "Por favor, selecione uma opção antes de enviar.",
         variant: "destructive",
       });
       return;
@@ -100,14 +112,14 @@ export default function Exercises() {
 
     submitAnswerMutation.mutate({
       exerciseId: currentExercise.exerciseId,
-      answer: userAnswer.trim(),
+      selectedOption: selectedOption,
       date: today,
     });
   };
 
   const handleNextExercise = () => {
     setShowResult(false);
-    setUserAnswer("");
+    setSelectedOption(null);
     setIsCorrect(false);
     
     // Find next incomplete exercise
@@ -126,29 +138,18 @@ export default function Exercises() {
     }
   };
 
-  const renderExerciseQuestion = (question: string) => {
-    // Replace underscores with input fields for cloze test
-    const parts = question.split('_____');
-    if (parts.length === 1) {
-      return question;
-    }
+  const getCategoryConfig = (category: string) => {
+    return categoryConfig[category as keyof typeof categoryConfig] || categoryConfig["Mindset Positivo"];
+  };
 
+  const CategoryBadge = ({ category }: { category: string }) => {
+    const config = getCategoryConfig(category);
+    const IconComponent = config.icon;
+    
     return (
-      <div className="flex flex-wrap items-center gap-2">
-        {parts.map((part, index) => (
-          <span key={index} className="flex items-center">
-            {part}
-            {index < parts.length - 1 && (
-              <Input
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                className="w-32 mx-2 text-center font-medium"
-                placeholder="?"
-                disabled={showResult || currentExercise?.completedAt}
-              />
-            )}
-          </span>
-        ))}
+      <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.textColor} border border-opacity-20`}>
+        <IconComponent className="w-4 h-4 mr-2" />
+        {category}
       </div>
     );
   };
@@ -203,7 +204,7 @@ export default function Exercises() {
                   </p>
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      💡 <strong>Em breve:</strong> Exercícios de preenchimento de lacunas para fortalecer 
+                      💡 <strong>Em breve:</strong> Exercícios de múltipla escolha para fortalecer 
                       seu mindset de emagrecimento e autoprogramação mental.
                     </p>
                   </div>
@@ -254,40 +255,85 @@ export default function Exercises() {
                       <Brain className="w-5 h-5 mr-2 text-primary" />
                       Exercício {currentExerciseIndex + 1} de {dailyExercises.length}
                     </span>
-                    <span className="text-sm font-normal text-neutral-500">
-                      {currentExercise?.exercise?.category || 'Mindset'}
-                    </span>
+                    <CategoryBadge category={currentExercise?.exercise?.category || 'Mindset Positivo'} />
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {currentExercise && (
                     <>
-                      <div className="bg-blue-50 p-6 rounded-lg">
-                        <p className="text-lg leading-relaxed text-neutral-800">
-                          {renderExerciseQuestion(currentExercise.exercise.question)}
+                      <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
+                        <p className="text-lg leading-relaxed text-neutral-800 font-medium">
+                          {currentExercise.exercise.question}
                         </p>
                       </div>
 
+                      {/* Multiple Choice Options */}
+                      {!currentExercise.completedAt && !showResult && (
+                        <div className="space-y-3">
+                          {currentExercise.exercise.options?.map((option: string, index: number) => (
+                            <button
+                              key={index}
+                              onClick={() => setSelectedOption(index)}
+                              className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                                selectedOption === index
+                                  ? 'border-primary bg-primary/5 shadow-md'
+                                  : 'border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50'
+                              }`}
+                            >
+                              <div className="flex items-center">
+                                <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
+                                  selectedOption === index
+                                    ? 'border-primary bg-primary'
+                                    : 'border-neutral-300'
+                                }`}>
+                                  {selectedOption === index && (
+                                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                                  )}
+                                </div>
+                                <span className="text-neutral-700 leading-relaxed">{option}</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
                       {showResult && (
-                        <div className={`p-4 rounded-lg ${
-                          isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+                        <div className={`p-6 rounded-lg border-2 ${
+                          isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
                         }`}>
-                          <div className="flex items-center space-x-2 mb-2">
+                          <div className="flex items-center space-x-3 mb-4">
                             {isCorrect ? (
-                              <CheckCircle className="w-5 h-5 text-green-600" />
+                              <CheckCircle className="w-6 h-6 text-green-600" />
                             ) : (
-                              <Target className="w-5 h-5 text-red-600" />
+                              <Target className="w-6 h-6 text-red-600" />
                             )}
-                            <p className={`font-medium ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
-                              {isCorrect ? 'Correto!' : 'Resposta incorreta'}
+                            <p className={`font-semibold text-lg ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
+                              {isCorrect ? 'Parabéns! Resposta Correta! 🎉' : 'Resposta Incorreta'}
                             </p>
                           </div>
-                          <p className={`text-sm ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
-                            {isCorrect 
-                              ? `Excelente! A resposta correta é "${currentExercise.exercise.answer}". Você ganhou 15 pontos!`
-                              : `A resposta correta é "${currentExercise.exercise.answer}". Você ganhou 5 pontos pela tentativa!`
-                            }
-                          </p>
+                          
+                          <div className="space-y-3">
+                            <div className={`p-3 rounded-lg ${isCorrect ? 'bg-green-100' : 'bg-red-100'}`}>
+                              <p className={`text-sm font-medium ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                                Sua resposta: {currentExercise.exercise.options[selectedOption || 0]}
+                              </p>
+                            </div>
+                            
+                            {!isCorrect && (
+                              <div className="p-3 rounded-lg bg-green-100">
+                                <p className="text-sm font-medium text-green-700">
+                                  Resposta correta: {currentExercise.exercise.options[currentExercise.exercise.correctOption]}
+                                </p>
+                              </div>
+                            )}
+                            
+                            <p className={`text-sm ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                              {isCorrect 
+                                ? `Excelente! Você ganhou 15 pontos por acertar!`
+                                : `Você ganhou 5 pontos pela tentativa. Continue praticando!`
+                              }
+                            </p>
+                          </div>
                         </div>
                       )}
 
@@ -295,10 +341,10 @@ export default function Exercises() {
                         <div className="flex space-x-3">
                           <Button
                             onClick={handleSubmitAnswer}
-                            disabled={submitAnswerMutation.isPending || !userAnswer.trim()}
-                            className="flex-1 bg-primary hover:bg-primary/90"
+                            disabled={submitAnswerMutation.isPending || selectedOption === null}
+                            className="flex-1 bg-primary hover:bg-primary/90 py-3 text-lg font-medium"
                           >
-                            {submitAnswerMutation.isPending ? "Enviando..." : "Enviar Resposta"}
+                            {submitAnswerMutation.isPending ? "Enviando..." : "Confirmar Resposta"}
                           </Button>
                         </div>
                       )}
@@ -307,7 +353,7 @@ export default function Exercises() {
                         <div className="flex space-x-3">
                           <Button
                             onClick={handleNextExercise}
-                            className="flex-1 bg-primary hover:bg-primary/90"
+                            className="flex-1 bg-primary hover:bg-primary/90 py-3 text-lg font-medium"
                           >
                             Próximo Exercício
                           </Button>
@@ -315,9 +361,9 @@ export default function Exercises() {
                       )}
 
                       {currentExercise.completedAt && !showResult && (
-                        <div className="flex items-center justify-center p-4 bg-green-50 rounded-lg">
-                          <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                          <span className="text-green-800 font-medium">Exercício já concluído</span>
+                        <div className="flex items-center justify-center p-6 bg-green-50 rounded-lg border border-green-200">
+                          <CheckCircle className="w-6 h-6 text-green-600 mr-3" />
+                          <span className="text-green-800 font-medium text-lg">Exercício já concluído</span>
                         </div>
                       )}
                     </>
