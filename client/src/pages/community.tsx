@@ -76,8 +76,13 @@ export default function Community() {
     mutationFn: async (topicId: number) => {
       return await apiRequest("POST", `/api/forum/topics/${topicId}/like`);
     },
-    onSuccess: () => {
+    onSuccess: (data, topicId) => {
       queryClient.invalidateQueries({ queryKey: ["/api/forum/topics"] });
+      toast({
+        title: "Curtida adicionada!",
+        description: "Obrigado por engajar com a comunidade.",
+        duration: 2000,
+      });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -91,6 +96,11 @@ export default function Community() {
         }, 500);
         return;
       }
+      toast({
+        title: "Erro ao curtir",
+        description: "Não foi possível curtir o post. Tente novamente.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -243,13 +253,13 @@ export default function Community() {
               </Card>
             ) : (
               filteredTopics.map((topic: any) => (
-                <Card key={topic.id} className="hover:shadow-md transition-shadow">
+                <Card key={topic.id} className="hover:shadow-md transition-all duration-200 hover:border-primary/20 cursor-pointer">
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
                       <img
-                        src={topic.user?.profileImageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(topic.user?.firstName || 'U')}&background=random`}
-                        alt="Avatar"
-                        className="w-10 h-10 rounded-full object-cover"
+                        src={topic.user?.profileImageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(topic.user?.firstName || 'U')}&background=random&color=ffffff`}
+                        alt={`Avatar de ${topic.user?.firstName || 'Usuário'}`}
+                        className="w-10 h-10 rounded-full object-cover border-2 border-neutral-100 hover:border-primary/30 transition-colors"
                       />
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
@@ -272,19 +282,36 @@ export default function Community() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => likeTopicMutation.mutate(topic.id)}
-                            className="text-neutral-600 hover:text-red-500 hover:bg-red-50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              likeTopicMutation.mutate(topic.id);
+                            }}
+                            disabled={likeTopicMutation.isPending}
+                            className="text-neutral-600 hover:text-red-500 hover:bg-red-50 transition-colors"
                           >
-                            <Heart className="w-4 h-4 mr-1" />
-                            {topic.likes}
+                            <Heart 
+                              className={`w-4 h-4 mr-1 ${likeTopicMutation.isPending ? 'animate-pulse' : ''}`}
+                              fill={topic.likes > 0 ? 'currentColor' : 'none'}
+                            />
+                            <span className="font-medium">{topic.likes}</span>
+                            <span className="text-xs ml-1">
+                              {topic.likes === 1 ? 'curtida' : 'curtidas'}
+                            </span>
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-neutral-600 hover:text-blue-500 hover:bg-blue-50"
+                            className="text-neutral-600 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Aqui você pode adicionar navegação para comentários no futuro
+                            }}
                           >
                             <MessageCircle className="w-4 h-4 mr-1" />
-                            {topic.commentCount} {topic.commentCount === 1 ? 'comentário' : 'comentários'}
+                            <span className="font-medium">{topic.commentCount}</span>
+                            <span className="text-xs ml-1">
+                              {topic.commentCount === 1 ? 'comentário' : 'comentários'}
+                            </span>
                           </Button>
                         </div>
                       </div>
