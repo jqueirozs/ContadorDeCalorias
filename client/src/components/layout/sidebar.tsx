@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Heart, BarChart3, Play, Users, Brain, FlipHorizontal2, Utensils, TrendingUp, LogOut, Menu, X } from "lucide-react";
+import { Heart, BarChart3, Play, Users, Brain, FlipHorizontal2, Utensils, TrendingUp, Calculator, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export default function Sidebar() {
@@ -21,6 +21,7 @@ export default function Sidebar() {
     { path: "/espelho", icon: FlipHorizontal2, label: "Espelho" },
     { path: "/refeicoes", icon: Utensils, label: "Refeições" },
     { path: "/evolucao", icon: TrendingUp, label: "Evolução" },
+    { path: "/calculadora", icon: Calculator, label: "Calculadora" },
   ];
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
