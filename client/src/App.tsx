@@ -13,6 +13,7 @@ import Exercises from "@/pages/exercises";
 import Reflection from "@/pages/reflection";
 import Meals from "@/pages/meals";
 import Evolution from "@/pages/evolution";
+import Calculadora from "@/pages/calculadora";
 import Sidebar from "@/components/layout/sidebar";
 
 function Router() {
@@ -36,6 +37,7 @@ function Router() {
           <Route path="/comunidade" component={Community} />
           <Route path="/exercicios" component={Exercises} />
           <Route path="/espelho" component={Reflection} />
+          <Route path="/calculadora" component={Calculadora} />
           <Route path="/refeicoes" component={Meals} />
           <Route path="/evolucao" component={Evolution} />
           <Route component={NotFound} />

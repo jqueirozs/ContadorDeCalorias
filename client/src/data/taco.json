@@ -1,0 +1,12 @@
+[
+  {"id":1,"alimento":"Arroz, branco, cozido","kcal":128,"proteina":2.5,"carboidrato":28.1,"lipidio":0.2},
+  {"id":2,"alimento":"Feijão, carioca, cozido","kcal":76,"proteina":4.8,"carboidrato":13.6,"lipidio":0.5},
+  {"id":3,"alimento":"Frango, peito, grelhado","kcal":163,"proteina":31.0,"carboidrato":0.0,"lipidio":3.6},
+  {"id":4,"alimento":"Ovo, cozido","kcal":146,"proteina":13.3,"carboidrato":0.6,"lipidio":9.5},
+  {"id":5,"alimento":"Maçã, crua, com casca","kcal":65,"proteina":0.2,"carboidrato":17.5,"lipidio":0.1},
+  {"id":6,"alimento":"Banana, prata, crua","kcal":92,"proteina":1.0,"carboidrato":23.3,"lipidio":0.2},
+  {"id":7,"alimento":"Batata, inglesa, cozida","kcal":52,"proteina":1.3,"carboidrato":11.9,"lipidio":0.1},
+  {"id":8,"alimento":"Carne, bovina, patinho, cozido","kcal":219,"proteina":32.9,"carboidrato":0.0,"lipidio":9.0},
+  {"id":9,"alimento":"Leite, integral","kcal":61,"proteina":3.2,"carboidrato":4.7,"lipidio":3.4},
+  {"id":10,"alimento":"Iogurte natural, integral","kcal":61,"proteina":3.5,"carboidrato":4.6,"lipidio":3.5}
+]

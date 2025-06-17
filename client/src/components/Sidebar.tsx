@@ -6,10 +6,11 @@ import {
   PlayCircle, 
   Users, 
   Brain, 
-  FlipHorizontal2, 
-  Utensils, 
+  FlipHorizontal2,
+  Utensils,
   TrendingUp,
-  MoreVertical
+  MoreVertical,
+  Calculator
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -23,6 +24,7 @@ export function Sidebar() {
     { name: "Comunidade", href: "/community", icon: Users },
     { name: "Academia da Mente", href: "/exercises", icon: Brain },
     { name: "Espelho", href: "/reflection", icon: FlipHorizontal2 },
+    { name: "Calculadora", href: "/calculadora", icon: Calculator },
     { name: "Refeições", href: "/meals", icon: Utensils },
     { name: "Evolução", href: "/evolution", icon: TrendingUp },
   ];
