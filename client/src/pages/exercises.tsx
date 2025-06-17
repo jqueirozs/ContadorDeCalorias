@@ -7,7 +7,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import Sidebar from "@/components/layout/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { Progress } from "@/components/ui/progress";
 import { Brain, CheckCircle, Star, Target } from "lucide-react";
 
@@ -89,10 +89,10 @@ export default function Exercises() {
   const progressPercentage = dailyExercises ? (completedExercises.length / dailyExercises.length) * 100 : 0;
 
   const handleSubmitAnswer = () => {
-    if (!userAnswer.trim() || !currentExercise) {
+    if (!userAnswer || !currentExercise) {
       toast({
-        title: "Resposta vazia",
-        description: "Por favor, digite uma resposta antes de enviar.",
+        title: "Selecione uma opção",
+        description: "Por favor, escolha uma das opções antes de enviar.",
         variant: "destructive",
       });
       return;
@@ -100,7 +100,7 @@ export default function Exercises() {
 
     submitAnswerMutation.mutate({
       exerciseId: currentExercise.exerciseId,
-      answer: userAnswer.trim(),
+      answer: userAnswer,
       date: today,
     });
   };
@@ -126,31 +126,9 @@ export default function Exercises() {
     }
   };
 
-  const renderExerciseQuestion = (question: string) => {
-    // Replace underscores with input fields for cloze test
-    const parts = question.split('_____');
-    if (parts.length === 1) {
-      return question;
-    }
-
-    return (
-      <div className="flex flex-wrap items-center gap-2">
-        {parts.map((part, index) => (
-          <span key={index} className="flex items-center">
-            {part}
-            {index < parts.length - 1 && (
-              <Input
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                className="w-32 mx-2 text-center font-medium"
-                placeholder="?"
-                disabled={showResult || currentExercise?.completedAt}
-              />
-            )}
-          </span>
-        ))}
-      </div>
-    );
+  const handleOptionSelect = (selectedOption: string) => {
+    if (showResult || currentExercise?.completedAt) return;
+    setUserAnswer(selectedOption);
   };
 
   return (
@@ -254,7 +232,7 @@ export default function Exercises() {
                       <Brain className="w-5 h-5 mr-2 text-primary" />
                       Exercício {currentExerciseIndex + 1} de {dailyExercises.length}
                     </span>
-                    <span className="text-sm font-normal text-neutral-500">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
                       {currentExercise?.exercise?.category || 'Mindset'}
                     </span>
                   </CardTitle>
@@ -263,9 +241,31 @@ export default function Exercises() {
                   {currentExercise && (
                     <>
                       <div className="bg-blue-50 p-6 rounded-lg">
-                        <p className="text-lg leading-relaxed text-neutral-800">
-                          {renderExerciseQuestion(currentExercise.exercise.question)}
+                        <p className="text-lg leading-relaxed text-neutral-800 mb-6">
+                          {currentExercise.exercise.question}
                         </p>
+                        
+                        {/* Opções de múltipla escolha */}
+                        <div className="space-y-3">
+                          {currentExercise.exercise.options?.map((option: string, index: number) => (
+                            <Button
+                              key={index}
+                              variant={userAnswer === option ? "default" : "outline"}
+                              onClick={() => handleOptionSelect(option)}
+                              disabled={showResult || currentExercise?.completedAt}
+                              className={`w-full justify-start text-left h-auto py-4 px-6 ${
+                                userAnswer === option 
+                                  ? 'bg-primary text-white hover:bg-primary/90' 
+                                  : 'bg-white hover:bg-neutral-50 text-neutral-800'
+                              }`}
+                            >
+                              <span className="font-medium mr-3">
+                                {String.fromCharCode(65 + index)})
+                              </span>
+                              {option}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
 
                       {showResult && (
@@ -295,7 +295,7 @@ export default function Exercises() {
                         <div className="flex space-x-3">
                           <Button
                             onClick={handleSubmitAnswer}
-                            disabled={submitAnswerMutation.isPending || !userAnswer.trim()}
+                            disabled={submitAnswerMutation.isPending || !userAnswer}
                             className="flex-1 bg-primary hover:bg-primary/90"
                           >
                             {submitAnswerMutation.isPending ? "Enviando..." : "Enviar Resposta"}
