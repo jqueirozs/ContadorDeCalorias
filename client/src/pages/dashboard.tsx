@@ -59,7 +59,6 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen bg-neutral-50">
       <Sidebar />
-      
       <div className="flex-1 lg:ml-64 overflow-auto">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
@@ -168,7 +167,7 @@ export default function Dashboard() {
             </div>
 
             {/* Sidebar Content */}
-            <div className="space-y-6">
+            <div className="space-y-6 mt-[20px] mb-[20px]">
               <QuickActions />
 
               {/* Recent Meals */}
