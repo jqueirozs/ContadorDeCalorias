@@ -13,17 +13,24 @@ import Exercises from "@/pages/exercises";
 import Reflection from "@/pages/reflection";
 import Meals from "@/pages/meals";
 import Evolution from "@/pages/evolution";
-import Sidebar from "@/components/Sidebar"; // Import Sidebar
+import Sidebar from "@/components/layout/sidebar";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return <div>Carregando...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <Route path="/" component={Landing} />;
+  }
+
   return (
-    <Switch>
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
-        <>
+    <div className="flex min-h-screen bg-neutral-50">
+      <Sidebar />
+      <main className="flex-1 lg:pl-0">
+        <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/curso" component={Course} />
           <Route path="/comunidade" component={Community} />
@@ -31,10 +38,10 @@ function Router() {
           <Route path="/espelho" component={Reflection} />
           <Route path="/refeicoes" component={Meals} />
           <Route path="/evolucao" component={Evolution} />
-        </>
-      )}
-      <Route component={NotFound} />
-    </Switch>
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+    </div>
   );
 }
 
@@ -43,21 +50,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <div className="flex min-h-screen bg-neutral-50">
-            <Sidebar />
-            <main className="flex-1 p-4 lg:p-6">
-              <Switch>
-                <Route path="/" component={Dashboard} />
-                <Route path="/curso" component={Course} />
-                <Route path="/comunidade" component={Community} />
-                <Route path="/exercicios" component={Exercises} />
-                <Route path="/espelho" component={Reflection} />
-                <Route path="/refeicoes" component={Meals} />
-                <Route path="/evolucao" component={Evolution} />
-                <Route component={NotFound} />
-              </Switch>
-            </main>
-        </div>
+        <Router />
       </TooltipProvider>
     </QueryClientProvider>
   );
