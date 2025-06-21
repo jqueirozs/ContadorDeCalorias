@@ -35,20 +35,15 @@ export default function Meals() {
     retry: false,
   });
 
-  const { data: allMeals } = useQuery({
-    queryKey: ["/api/meals"],
-    retry: false,
-  });
-
   if (isLoading || !isAuthenticated) {
     return null;
   }
 
   const filteredMeals = searchTerm
-    ? allMeals?.filter((meal: any) =>
+    ? (meals || []).filter((meal: any) =>
         meal.foods.toLowerCase().includes(searchTerm.toLowerCase()) ||
         meal.type.toLowerCase().includes(searchTerm.toLowerCase())
-      ) || []
+      )
     : meals || [];
 
   const getMealTypeLabel = (type: string) => {
