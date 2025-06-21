@@ -10,6 +10,7 @@ import {
   insertWeightEntrySchema,
 } from "@shared/schema";
 import { generateInsights } from "./openai";
+import { processVoiceTranscription } from "./voiceProcessor";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -297,6 +298,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching points history:", error);
       res.status(500).json({ message: "Failed to fetch points history" });
+    }
+  });
+
+  // Voice processing route
+  app.post('/api/voice/process', isAuthenticated, async (req: any, res) => {
+    try {
+      const { transcript } = req.body;
+      
+      if (!transcript || typeof transcript !== 'string') {
+        return res.status(400).json({ message: "Transcript is required" });
+      }
+
+      const processed = await processVoiceTranscription(transcript);
+      res.json(processed);
+    } catch (error) {
+      console.error("Error processing voice:", error);
+      res.status(500).json({ message: "Failed to process voice input" });
     }
   });
 

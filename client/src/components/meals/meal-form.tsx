@@ -29,7 +29,7 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
   const [calories, setCalories] = useState("");
   const [date, setDate] = useState(selectedDate || new Date().toISOString().split('T')[0]);
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
-  const [activeTab, setActiveTab] = useState("voice");
+  const [activeTab, setActiveTab] = useState("manual");
   const [voicePrompt, setVoicePrompt] = useState("");
 
   // Update date when selectedDate prop changes
@@ -44,19 +44,46 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
     setVoicePrompt(generateVoicePrompt({ type: mealType, time, foods, calories: calories ? parseInt(calories) : undefined }));
   }, [mealType, time, foods, calories]);
 
-  const handleVoiceTranscript = (transcript: string) => {
-    const parsed = parseMealFromVoice(transcript);
-    
-    if (parsed.type) setMealType(parsed.type);
-    if (parsed.time) setTime(parsed.time);
-    if (parsed.foods) setFoods(parsed.foods);
-    if (parsed.calories) setCalories(parsed.calories.toString());
+  const handleVoiceTranscript = async (transcript: string) => {
+    try {
+      // Show processing message
+      toast({
+        title: "Processando fala...",
+        description: "Aguarde enquanto a IA processa e corrige sua transcrição.",
+      });
 
-    // Show success message
-    toast({
-      title: "Fala processada!",
-      description: "Os dados foram extraídos da sua fala. Verifique se estão corretos.",
-    });
+      // Send to AI for processing
+      const response = await apiRequest("POST", "/api/voice/process", { transcript });
+      const processed = await response.json();
+      
+      // Apply processed data
+      if (processed.mealType) setMealType(processed.mealType);
+      if (processed.time) setTime(processed.time);
+      if (processed.formattedDescription) setFoods(processed.formattedDescription);
+      if (processed.calories) setCalories(processed.calories.toString());
+
+      // Show success message
+      toast({
+        title: "Fala processada com IA!",
+        description: "Os dados foram extraídos e formatados automaticamente. Verifique se estão corretos.",
+      });
+    } catch (error) {
+      console.error("Error processing voice:", error);
+      
+      // Fallback to local processing
+      const parsed = parseMealFromVoice(transcript);
+      
+      if (parsed.type) setMealType(parsed.type);
+      if (parsed.time) setTime(parsed.time);
+      if (parsed.foods) setFoods(parsed.foods);
+      if (parsed.calories) setCalories(parsed.calories.toString());
+
+      toast({
+        title: "Fala processada!",
+        description: "Processado localmente. Verifique se os dados estão corretos.",
+        variant: "destructive",
+      });
+    }
   };
 
   const createMealMutation = useMutation({
@@ -73,7 +100,7 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
       setFoods("");
       setCalories("");
       setDate(selectedDate || new Date().toISOString().split('T')[0]);
-      setActiveTab("voice");
+      setActiveTab("manual");
       
       setShowPointsAnimation(true);
       onClose();
@@ -134,53 +161,15 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="voice" className="flex items-center space-x-2">
-                <Mic className="w-4 h-4" />
-                <span>Por Voz</span>
-              </TabsTrigger>
               <TabsTrigger value="manual" className="flex items-center space-x-2">
                 <Edit3 className="w-4 h-4" />
                 <span>Manual</span>
               </TabsTrigger>
+              <TabsTrigger value="voice" className="flex items-center space-x-2">
+                <Mic className="w-4 h-4" />
+                <span>Por Voz</span>
+              </TabsTrigger>
             </TabsList>
-
-            <TabsContent value="voice" className="space-y-4">
-              <div className="text-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h3 className="font-medium text-blue-900 mb-2">Registro por Voz</h3>
-                <p className="text-sm text-blue-700 mb-4">
-                  Fale naturalmente sobre sua refeição incluindo o tipo, horário e alimentos.
-                </p>
-                <div className="text-xs text-blue-600 bg-white p-2 rounded border border-blue-200">
-                  <strong>Exemplos:</strong><br />
-                  "Almoço às 13:30 com arroz, feijão e frango"<br />
-                  "Café da manhã com pão e café às 8 horas"
-                </div>
-              </div>
-
-              <VoiceInput
-                onTranscript={handleVoiceTranscript}
-                placeholder="Clique no microfone e descreva sua refeição"
-                disabled={createMealMutation.isPending}
-              />
-
-              {(mealType || time || foods) && (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <h4 className="font-medium text-green-900 mb-2">Dados Capturados:</h4>
-                  <div className="space-y-1 text-sm text-green-800">
-                    {mealType && <div><strong>Tipo:</strong> {
-                      mealType === 'breakfast' ? 'Café da Manhã' :
-                      mealType === 'lunch' ? 'Almoço' :
-                      mealType === 'dinner' ? 'Jantar' :
-                      mealType === 'snack' ? 'Lanche' :
-                      mealType === 'supper' ? 'Ceia' : mealType
-                    }</div>}
-                    {time && <div><strong>Horário:</strong> {time}</div>}
-                    {foods && <div><strong>Alimentos:</strong> {foods}</div>}
-                    {calories && <div><strong>Calorias:</strong> {calories}</div>}
-                  </div>
-                </div>
-              )}
-            </TabsContent>
 
             <TabsContent value="manual" className="space-y-4">
               <div className="space-y-4">
@@ -256,6 +245,44 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
                   />
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="voice" className="space-y-4">
+              <div className="text-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 className="font-medium text-blue-900 mb-2">Registro por Voz com IA</h3>
+                <p className="text-sm text-blue-700 mb-4">
+                  Fale naturalmente sobre sua refeição. A IA vai corrigir e formatar sua fala automaticamente.
+                </p>
+                <div className="text-xs text-blue-600 bg-white p-2 rounded border border-blue-200">
+                  <strong>Exemplos:</strong><br />
+                  "Almoço às 13:30 com arroz, feijão e frango"<br />
+                  "Café da manhã com pão e café às 8 horas"
+                </div>
+              </div>
+
+              <VoiceInput
+                onTranscript={handleVoiceTranscript}
+                placeholder="Clique no microfone e descreva sua refeição"
+                disabled={createMealMutation.isPending}
+              />
+
+              {(mealType || time || foods) && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <h4 className="font-medium text-green-900 mb-2">Dados Processados pela IA:</h4>
+                  <div className="space-y-1 text-sm text-green-800">
+                    {mealType && <div><strong>Tipo:</strong> {
+                      mealType === 'breakfast' ? 'Café da Manhã' :
+                      mealType === 'lunch' ? 'Almoço' :
+                      mealType === 'dinner' ? 'Jantar' :
+                      mealType === 'snack' ? 'Lanche' :
+                      mealType === 'supper' ? 'Ceia' : mealType
+                    }</div>}
+                    {time && <div><strong>Horário:</strong> {time}</div>}
+                    {foods && <div><strong>Alimentos:</strong> {foods}</div>}
+                    {calories && <div><strong>Calorias:</strong> {calories}</div>}
+                  </div>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
 
