@@ -370,18 +370,17 @@ export class DatabaseStorage implements IStorage {
 
   // Meal operations
   async getMeals(userId: string, date?: string): Promise<Meal[]> {
-    let query = db.select().from(meals).where(eq(meals.userId, userId));
-
+    const whereConditions = [eq(meals.userId, userId)];
+    
     if (date) {
-      query = db.select().from(meals).where(
-        and(
-          eq(meals.userId, userId),
-          eq(meals.date, date)
-        )
-      );
+      whereConditions.push(eq(meals.date, date));
     }
 
-    return await query.orderBy(desc(meals.createdAt));
+    return await db
+      .select()
+      .from(meals)
+      .where(and(...whereConditions))
+      .orderBy(desc(meals.createdAt));
   }
 
   async createMeal(meal: InsertMeal): Promise<Meal> {
