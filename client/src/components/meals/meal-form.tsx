@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label";
 import { PointsAnimation } from "@/components/ui/points-animation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VoiceInput from "@/components/ui/voice-input";
+import PhotoUpload from "@/components/ui/photo-upload";
 import { parseMealFromVoice, generateVoicePrompt } from "@/lib/voiceParser";
-import { Mic, Edit3 } from "lucide-react";
+import { Mic, Edit3, Camera } from "lucide-react";
 
 interface MealFormProps {
   isOpen: boolean;
@@ -30,6 +31,8 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
   const [date, setDate] = useState(selectedDate || new Date().toISOString().split('T')[0]);
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [activeTab, setActiveTab] = useState("manual");
+  const [nutrients, setNutrients] = useState<any>(null);
+  const [photoAnalysis, setPhotoAnalysis] = useState<any>(null);
   const [voicePrompt, setVoicePrompt] = useState("");
 
   // Update date when selectedDate prop changes
@@ -86,6 +89,30 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
     }
   };
 
+  const handlePhotoAnalyzed = (analysis: any) => {
+    setPhotoAnalysis(analysis);
+    
+    // Auto-fill form based on photo analysis
+    if (analysis.mealType) setMealType(analysis.mealType);
+    if (analysis.description) setFoods(analysis.description);
+    if (analysis.nutrients?.calories) setCalories(Math.round(analysis.nutrients.calories).toString());
+    
+    // Set current time as default
+    if (!time) {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      setTime(`${hours}:${minutes}`);
+    }
+    
+    setNutrients(analysis.nutrients);
+
+    toast({
+      title: "Foto analisada com IA!",
+      description: `${analysis.foods?.length || 0} alimentos identificados. Verifique se os dados estão corretos.`,
+    });
+  };
+
   const createMealMutation = useMutation({
     mutationFn: async (data: { type: string; time: string; foods: string; calories?: number; date: string }) => {
       return await apiRequest("POST", "/api/meals", data);
@@ -101,6 +128,8 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
       setCalories("");
       setDate(selectedDate || new Date().toISOString().split('T')[0]);
       setActiveTab("manual");
+      setNutrients(null);
+      setPhotoAnalysis(null);
       
       setShowPointsAnimation(true);
       onClose();
@@ -142,13 +171,33 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
       return;
     }
 
-    createMealMutation.mutate({
+    // Prepare meal data with nutrients if available
+    const mealData: any = {
       type: mealType,
       time,
       foods,
       calories: calories ? parseInt(calories) : undefined,
       date,
-    });
+    };
+
+    // Add nutrient data if available from photo analysis
+    if (nutrients) {
+      mealData.protein = nutrients.protein || 0;
+      mealData.carbohydrates = nutrients.carbohydrates || 0;
+      mealData.fat = nutrients.fat || 0;
+      mealData.fiber = nutrients.fiber || 0;
+      mealData.sugar = nutrients.sugar || 0;
+      mealData.sodium = nutrients.sodium || 0;
+    }
+
+    // Add photo analysis metadata if available
+    if (photoAnalysis) {
+      mealData.analysisConfidence = photoAnalysis.confidence;
+      mealData.identifiedFoods = photoAnalysis.foods;
+      mealData.estimatedPortions = photoAnalysis.estimatedPortions;
+    }
+
+    createMealMutation.mutate(mealData);
   };
 
   return (
@@ -160,14 +209,18 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
           </DialogHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="manual" className="flex items-center space-x-2">
                 <Edit3 className="w-4 h-4" />
                 <span>Manual</span>
               </TabsTrigger>
+              <TabsTrigger value="photo" className="flex items-center space-x-2">
+                <Camera className="w-4 h-4" />
+                <span>Foto</span>
+              </TabsTrigger>
               <TabsTrigger value="voice" className="flex items-center space-x-2">
                 <Mic className="w-4 h-4" />
-                <span>Por Voz</span>
+                <span>Voz</span>
               </TabsTrigger>
             </TabsList>
 
@@ -245,6 +298,57 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
                   />
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="photo" className="space-y-4">
+              <div className="text-center p-4 bg-green-50 border border-green-200 rounded-lg">
+                <h3 className="font-medium text-green-900 mb-2">Análise por Foto com IA</h3>
+                <p className="text-sm text-green-700 mb-4">
+                  Tire uma foto da sua refeição e a IA identificará automaticamente os alimentos e nutrientes.
+                </p>
+                <div className="text-xs text-green-600 bg-white p-2 rounded border border-green-200">
+                  <strong>Dicas:</strong><br />
+                  • Tire a foto com boa iluminação<br />
+                  • Mostre todos os alimentos claramente<br />
+                  • Evite sombras sobre a comida
+                </div>
+              </div>
+
+              <PhotoUpload
+                onPhotoAnalyzed={handlePhotoAnalyzed}
+                disabled={createMealMutation.isPending}
+              />
+
+              {photoAnalysis && (
+                <div className="space-y-4">
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h4 className="font-medium text-blue-900 mb-2">Análise da IA:</h4>
+                    <div className="space-y-2 text-sm text-blue-800">
+                      <div><strong>Confiança:</strong> {Math.round((photoAnalysis.confidence || 0) * 100)}%</div>
+                      {photoAnalysis.foods && photoAnalysis.foods.length > 0 && (
+                        <div><strong>Alimentos identificados:</strong> {photoAnalysis.foods.join(', ')}</div>
+                      )}
+                      {photoAnalysis.estimatedPortions && photoAnalysis.estimatedPortions.length > 0 && (
+                        <div><strong>Porções estimadas:</strong> {photoAnalysis.estimatedPortions.join(', ')}</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {nutrients && (
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <h4 className="font-medium text-yellow-900 mb-2">Informações Nutricionais:</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm text-yellow-800">
+                        <div><strong>Calorias:</strong> {Math.round(nutrients.calories)} kcal</div>
+                        <div><strong>Proteínas:</strong> {Math.round(nutrients.protein)}g</div>
+                        <div><strong>Carboidratos:</strong> {Math.round(nutrients.carbohydrates)}g</div>
+                        <div><strong>Gorduras:</strong> {Math.round(nutrients.fat)}g</div>
+                        {nutrients.fiber > 0 && <div><strong>Fibras:</strong> {Math.round(nutrients.fiber)}g</div>}
+                        {nutrients.sugar > 0 && <div><strong>Açúcares:</strong> {Math.round(nutrients.sugar)}g</div>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="voice" className="space-y-4">

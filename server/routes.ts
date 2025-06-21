@@ -11,6 +11,7 @@ import {
 } from "@shared/schema";
 import { generateInsights } from "./openai";
 import { processVoiceTranscription } from "./voiceProcessor";
+import { analyzeMealPhoto } from "./photoProcessor";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -315,6 +316,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error processing voice:", error);
       res.status(500).json({ message: "Failed to process voice input" });
+    }
+  });
+
+  // Photo analysis route
+  app.post('/api/meals/analyze-photo', isAuthenticated, async (req: any, res) => {
+    try {
+      const { image } = req.body;
+      
+      if (!image || typeof image !== 'string') {
+        return res.status(400).json({ message: "Base64 image is required" });
+      }
+
+      const analysis = await analyzeMealPhoto(image);
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing meal photo:", error);
+      res.status(500).json({ message: "Failed to analyze meal photo" });
     }
   });
 

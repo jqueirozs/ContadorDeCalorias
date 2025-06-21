@@ -394,14 +394,22 @@ export class DatabaseStorage implements IStorage {
     };
 
     const points = pointsMap[meal.type] || 10;
+    
+    // Additional points for photo analysis
+    const photoBonus = meal.photoUrl ? 5 : 0;
+    const totalPoints = points + photoBonus;
 
     const [newMeal] = await db
       .insert(meals)
-      .values({ ...meal, points })
+      .values({ ...meal, points: totalPoints })
       .returning();
 
     // Award points for registering meal
-    await this.addPoints(meal.userId, `Refeição registrada: ${meal.type}`, points, meal.date);
+    const pointsDescription = meal.photoUrl 
+      ? `Refeição registrada com foto: ${meal.type}`
+      : `Refeição registrada: ${meal.type}`;
+      
+    await this.addPoints(meal.userId, pointsDescription, totalPoints, meal.date);
 
     return newMeal;
   }

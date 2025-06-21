@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Plus, Search, Utensils } from "lucide-react";
+import { Calendar, Clock, Plus, Search, Utensils, Camera } from "lucide-react";
+import NutrientDisplay from "@/components/ui/nutrient-display";
 
 export default function Meals() {
   const { toast } = useToast();
@@ -223,13 +224,42 @@ export default function Meals() {
                                         <Clock className="w-3 h-3 mr-1" />
                                         {meal.time}
                                       </div>
+                                      {meal.photoUrl && (
+                                        <div className="flex items-center text-sm text-green-600">
+                                          <Camera className="w-3 h-3 mr-1" />
+                                          <span>Com foto</span>
+                                        </div>
+                                      )}
                                     </div>
-                                    <p className="text-neutral-700">{meal.foods}</p>
+                                    <p className="text-neutral-700 mb-2">{meal.foods}</p>
+                                    
+                                    {/* Show nutrient information if available */}
+                                    {(meal.calories || meal.protein || meal.carbohydrates || meal.fat) && (
+                                      <div className="mt-3">
+                                        <NutrientDisplay 
+                                          nutrients={{
+                                            calories: meal.calories,
+                                            protein: parseFloat(meal.protein || '0'),
+                                            carbohydrates: parseFloat(meal.carbohydrates || '0'),
+                                            fat: parseFloat(meal.fat || '0'),
+                                            fiber: parseFloat(meal.fiber || '0'),
+                                            sugar: parseFloat(meal.sugar || '0'),
+                                            sodium: parseFloat(meal.sodium || '0'),
+                                          }}
+                                          className="border-0 bg-white"
+                                        />
+                                      </div>
+                                    )}
                                   </div>
                                   <div className="text-right ml-4">
                                     <div className="text-sm font-medium text-secondary">
                                       +{meal.points} pts
                                     </div>
+                                    {meal.analysisConfidence && (
+                                      <div className="text-xs text-neutral-500 mt-1">
+                                        IA: {Math.round(parseFloat(meal.analysisConfidence) * 100)}%
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </CardContent>
