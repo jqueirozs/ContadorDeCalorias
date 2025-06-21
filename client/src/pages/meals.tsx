@@ -310,6 +310,7 @@ export default function Meals() {
       <MealForm 
         isOpen={showMealForm} 
         onClose={() => setShowMealForm(false)} 
+        selectedDate={selectedDate}
         />
     </>
   );

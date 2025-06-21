@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -14,15 +14,24 @@ import { PointsAnimation } from "@/components/ui/points-animation";
 interface MealFormProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedDate?: string;
 }
 
-export default function MealForm({ isOpen, onClose }: MealFormProps) {
+export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProps) {
   const { toast } = useToast();
   const [mealType, setMealType] = useState("");
   const [time, setTime] = useState("");
   const [foods, setFoods] = useState("");
   const [calories, setCalories] = useState("");
+  const [date, setDate] = useState(selectedDate || new Date().toISOString().split('T')[0]);
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
+
+  // Update date when selectedDate prop changes
+  useEffect(() => {
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
+  }, [selectedDate]);
 
   const createMealMutation = useMutation({
     mutationFn: async (data: { type: string; time: string; foods: string; calories?: number; date: string }) => {
@@ -37,6 +46,7 @@ export default function MealForm({ isOpen, onClose }: MealFormProps) {
       setTime("");
       setFoods("");
       setCalories("");
+      setDate(selectedDate || new Date().toISOString().split('T')[0]);
       
       setShowPointsAnimation(true);
       onClose();
@@ -78,14 +88,12 @@ export default function MealForm({ isOpen, onClose }: MealFormProps) {
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0];
-    
     createMealMutation.mutate({
       type: mealType,
       time,
       foods,
       calories: calories ? parseInt(calories) : undefined,
-      date: today,
+      date,
     });
   };
 
@@ -113,6 +121,19 @@ export default function MealForm({ isOpen, onClose }: MealFormProps) {
                   <SelectItem value="snack">Lanche</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="date" className="block text-sm font-medium text-neutral-700 mb-2">
+                Data *
+              </Label>
+              <Input
+                id="date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
             </div>
 
             <div>
