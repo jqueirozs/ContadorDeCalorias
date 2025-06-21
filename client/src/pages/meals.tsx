@@ -155,7 +155,7 @@ export default function Meals() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Refeições de {new Date(selectedDate).toLocaleDateString('pt-BR')}
+                  Refeições de {selectedDate.split('-').reverse().join('/')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
