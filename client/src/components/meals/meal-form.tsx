@@ -33,6 +33,7 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
   const [activeTab, setActiveTab] = useState("manual");
   const [nutrients, setNutrients] = useState<any>(null);
   const [photoAnalysis, setPhotoAnalysis] = useState<any>(null);
+  const [isPhotoAnalyzing, setIsPhotoAnalyzing] = useState(false);
   const [voicePrompt, setVoicePrompt] = useState("");
 
   // Update date when selectedDate prop changes
@@ -90,7 +91,17 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
   };
 
   const handlePhotoAnalyzed = (analysis: any) => {
+    setIsPhotoAnalyzing(false);
     setPhotoAnalysis(analysis);
+    
+    if (analysis.error) {
+      toast({
+        title: "Erro na análise",
+        description: "Não foi possível analisar a foto. Tente novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Auto-fill form based on photo analysis
     if (analysis.mealType) setMealType(analysis.mealType);
@@ -109,8 +120,12 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
 
     toast({
       title: "Foto analisada com IA!",
-      description: `${analysis.foods?.length || 0} alimentos identificados. Verifique se os dados estão corretos.`,
+      description: `${analysis.foods?.length || 0} alimentos identificados. Dados preenchidos automaticamente.`,
     });
+  };
+
+  const handlePhotoAnalyzing = () => {
+    setIsPhotoAnalyzing(true);
   };
 
   const createMealMutation = useMutation({
@@ -130,6 +145,7 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
       setActiveTab("manual");
       setNutrients(null);
       setPhotoAnalysis(null);
+      setIsPhotoAnalyzing(false);
       
       setShowPointsAnimation(true);
       onClose();
@@ -316,7 +332,8 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
 
               <PhotoUpload
                 onPhotoAnalyzed={handlePhotoAnalyzed}
-                disabled={createMealMutation.isPending}
+                onAnalyzing={handlePhotoAnalyzing}
+                disabled={createMealMutation.isPending || isPhotoAnalyzing}
               />
 
               {photoAnalysis && (
@@ -402,10 +419,11 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={createMealMutation.isPending || (!mealType || !time || !foods)}
+              disabled={createMealMutation.isPending || isPhotoAnalyzing || (!mealType || !time || !foods)}
               className="flex-1 bg-primary hover:bg-primary/90"
             >
-              {createMealMutation.isPending ? "Registrando..." : "Registrar"}
+              {createMealMutation.isPending ? "Registrando..." : 
+               isPhotoAnalyzing ? "Analisando foto..." : "Registrar"}
             </Button>
           </div>
         </DialogContent>

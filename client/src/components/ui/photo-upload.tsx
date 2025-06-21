@@ -5,11 +5,12 @@ import { cn } from '@/lib/utils';
 
 interface PhotoUploadProps {
   onPhotoAnalyzed: (analysis: any) => void;
+  onAnalyzing?: () => void;
   disabled?: boolean;
   className?: string;
 }
 
-export default function PhotoUpload({ onPhotoAnalyzed, disabled, className }: PhotoUploadProps) {
+export default function PhotoUpload({ onPhotoAnalyzed, onAnalyzing, disabled, className }: PhotoUploadProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,40 +29,68 @@ export default function PhotoUpload({ onPhotoAnalyzed, disabled, className }: Ph
 
     // Analyze photo
     setIsAnalyzing(true);
+    onAnalyzing?.();
     try {
-      const base64 = await convertFileToBase64(file);
+      // Resize image before sending to API
+      const resizedBase64 = await resizeAndConvertToBase64(file);
       const response = await fetch('/api/meals/analyze-photo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ image: base64 }),
+        body: JSON.stringify({ image: resizedBase64 }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to analyze photo');
+        const errorText = await response.text();
+        throw new Error(`Failed to analyze photo: ${response.status} ${errorText}`);
       }
 
       const analysis = await response.json();
       onPhotoAnalyzed(analysis);
     } catch (error) {
       console.error('Error analyzing photo:', error);
-      // You might want to show an error toast here
+      onPhotoAnalyzed({ error: error.message });
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  const convertFileToBase64 = (file: File): Promise<string> => {
+  const resizeAndConvertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = (reader.result as string).split(',')[1];
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions (max 800px on longest side)
+        const maxSize = 800;
+        let { width, height } = img;
+        
+        if (width > height) {
+          if (width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx!.drawImage(img, 0, 0, width, height);
+        const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
         resolve(base64);
       };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+      
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
     });
   };
 
@@ -114,7 +143,8 @@ export default function PhotoUpload({ onPhotoAnalyzed, disabled, className }: Ph
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
               <div className="text-white text-center">
                 <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
-                <p className="text-sm">Analisando foto com IA...</p>
+                <p className="text-sm font-medium">Analisando foto com IA...</p>
+                <p className="text-xs opacity-80">Identificando alimentos e nutrientes</p>
               </div>
             </div>
           )}
