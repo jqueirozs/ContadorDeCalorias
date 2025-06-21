@@ -26,6 +26,7 @@ This is a full-stack weight loss application built with TypeScript, React, Expre
 - **Connection**: Neon serverless database with connection pooling
 - **Schema Management**: Drizzle Kit for migrations
 - **Session Storage**: Database-backed sessions for authentication
+- **Nutrient Data**: Comprehensive nutritional information storage with AI-extracted data
 
 ## Key Components
 
@@ -40,10 +41,11 @@ This is a full-stack weight loss application built with TypeScript, React, Expre
 2. **Course System**: Video modules with progress tracking
 3. **Community Forum**: Topic-based discussions with user interactions
 4. **Exercise System**: Daily mental exercises with scoring
-5. **Meal Tracking**: Food logging with categorization and voice input with AI processing
+5. **Meal Tracking**: Food logging with categorization, voice input, and photo analysis with AI processing
 6. **Reflection Tool**: Daily behavior and mood tracking
 7. **Evolution Analytics**: Weight trends and insights with AI-powered analysis
 8. **Voice Input**: Speech recognition with AI-powered transcription correction and formatting
+9. **Photo Recognition**: AI-powered meal photo analysis with automatic nutrient extraction
 
 ### Database Schema
 - **Users**: Profile management with weight and points tracking
@@ -120,6 +122,7 @@ This is a full-stack weight loss application built with TypeScript, React, Expre
 
 ```
 Changelog:
+- June 21, 2025. Implemented meal photo recognition and automatic nutrient tracking
 - June 21, 2025. Implemented voice input for meal logging with AI processing
 - June 21, 2025. Fixed meal filtering by date issue
 - June 16, 2025. Initial setup
