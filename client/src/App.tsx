@@ -28,7 +28,7 @@ function Router() {
   }
 
   return (
-    <div className="flex min-h-screen bg-neutral-50">
+    <div className="relative flex min-h-screen bg-background">
       <Sidebar />
       <main className="flex-1 lg:pl-0">
         <Switch>
