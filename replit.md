@@ -42,10 +42,11 @@ This is a full-stack weight loss application built with TypeScript, React, Expre
 3. **Community Forum**: Topic-based discussions with user interactions
 4. **Exercise System**: Daily mental exercises with scoring
 5. **Meal Tracking**: Food logging with categorization, voice input, and photo analysis with AI processing
-6. **Reflection Tool**: Daily behavior and mood tracking
+6. **Reflection Tool**: Daily behavior and mood tracking with comprehensive daily balance assessment
 7. **Evolution Analytics**: Weight trends and insights with AI-powered analysis
 8. **Voice Input**: Speech recognition with AI-powered transcription correction and formatting
 9. **Photo Recognition**: AI-powered meal photo analysis with automatic nutrient extraction
+10. **Daily Balance**: Structured questionnaire covering nutrition habits, metabolism, impulse control, and self-assessment
 
 ### Database Schema
 - **Users**: Profile management with weight and points tracking
@@ -122,6 +123,7 @@ This is a full-stack weight loss application built with TypeScript, React, Expre
 
 ```
 Changelog:
+- June 22, 2025. Enhanced behavior reflection with comprehensive daily balance questions
 - June 21, 2025. Implemented meal photo recognition and automatic nutrient tracking
 - June 21, 2025. Implemented voice input for meal logging with AI processing
 - June 21, 2025. Fixed meal filtering by date issue
