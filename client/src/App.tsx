@@ -1,8 +1,9 @@
 import React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Router, Route, Switch } from "wouter";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
+import { queryClient } from "@/lib/queryClient";
 import Layout from "@/components/Layout";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
@@ -15,37 +16,54 @@ import Exercises from "@/pages/exercises";
 import Calculadora from "@/pages/calculadora";
 import NotFound from "@/pages/not-found";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-    },
-  },
-});
-
 const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Router>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/app" element={<Layout />}>
-              <Route index element={<Navigate to="/app/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="meals" element={<Meals />} />
-              <Route path="evolution" element={<Evolution />} />
-              <Route path="reflection" element={<Reflection />} />
-              <Route path="course" element={<Course />} />
-              <Route path="community" element={<Community />} />
-              <Route path="exercises" element={<Exercises />} />
-              <Route path="calculadora" element={<Calculadora />} />
+          <Switch>
+            <Route path="/">
+              <Landing />
             </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
+            <Route path="/app/:rest*">
+              <Layout>
+                <Switch>
+                  <Route path="/app/dashboard">
+                    <Dashboard />
+                  </Route>
+                  <Route path="/app/meals">
+                    <Meals />
+                  </Route>
+                  <Route path="/app/evolution">
+                    <Evolution />
+                  </Route>
+                  <Route path="/app/reflection">
+                    <Reflection />
+                  </Route>
+                  <Route path="/app/course">
+                    <Course />
+                  </Route>
+                  <Route path="/app/community">
+                    <Community />
+                  </Route>
+                  <Route path="/app/exercises">
+                    <Exercises />
+                  </Route>
+                  <Route path="/app/calculadora">
+                    <Calculadora />
+                  </Route>
+                  <Route path="/app">
+                    <Dashboard />
+                  </Route>
+                </Switch>
+              </Layout>
+            </Route>
+            <Route>
+              <NotFound />
+            </Route>
+          </Switch>
         </Router>
+        <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
   );
