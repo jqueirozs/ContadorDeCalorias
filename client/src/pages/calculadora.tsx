@@ -10,10 +10,12 @@ import { Calculator, Activity, User } from "lucide-react";
 interface TacoItem {
   id: number;
   alimento: string;
+  categoria: string;
   kcal: number;
   proteina: number;
   carboidrato: number;
   lipidio: number;
+  fibra: number;
 }
 
 type CalculatorType = 'main' | 'calories' | 'expenditure' | 'bmi';
@@ -24,6 +26,8 @@ export default function Calculadora() {
   // Calorie Calculator State
   const [foodId, setFoodId] = useState<number | null>(null);
   const [grams, setGrams] = useState(100);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // BMI Calculator State
   const [bmiGender, setBmiGender] = useState<'male' | 'female'>('male');
@@ -44,10 +48,21 @@ export default function Calculadora() {
   const selectedFood = tacoData.find((f: TacoItem) => f.id === foodId);
   const factor = grams / 100;
 
+  // Get unique categories for filter
+  const categories = Array.from(new Set(tacoData.map((item: TacoItem) => item.categoria))).sort();
+  
+  // Filter foods based on search and category
+  const filteredFoods = tacoData.filter((item: TacoItem) => {
+    const matchesSearch = item.alimento.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || item.categoria === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   const calories = selectedFood ? selectedFood.kcal * factor : 0;
   const protein = selectedFood ? selectedFood.proteina * factor : 0;
   const carbs = selectedFood ? selectedFood.carboidrato * factor : 0;
   const fat = selectedFood ? selectedFood.lipidio * factor : 0;
+  const fiber = selectedFood ? selectedFood.fibra * factor : 0;
 
   const calculateBMI = () => {
     const heightInMeters = bmiHeight / 100;
@@ -163,16 +178,47 @@ export default function Calculadora() {
 
         <Card>
           <CardContent className="p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>Buscar alimento</Label>
+                <Input
+                  type="text"
+                  placeholder="Digite o nome do alimento..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Categoria</Label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as categorias</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div>
-              <Label>Alimento</Label>
-              <Select onValueChange={(val) => setFoodId(parseInt(val))}>
+              <Label>Alimento ({filteredFoods.length} itens encontrados)</Label>
+              <Select value={foodId ? String(foodId) : ""} onValueChange={(val) => setFoodId(parseInt(val))}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecione o alimento" />
                 </SelectTrigger>
                 <SelectContent>
-                  {tacoData.map((item: TacoItem) => (
+                  {filteredFoods.map((item: TacoItem) => (
                     <SelectItem key={item.id} value={String(item.id)}>
-                      {item.alimento}
+                      <div className="flex flex-col">
+                        <span>{item.alimento}</span>
+                        <span className="text-xs text-gray-500">{item.categoria} • {item.kcal} kcal/100g</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -190,20 +236,48 @@ export default function Calculadora() {
             </div>
 
             {selectedFood && (
-              <div className="space-y-2 mt-4">
-                <div className="text-3xl font-bold text-primary">
-                  {calories.toFixed(1)} kcal
+              <div className="space-y-4 mt-6">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    {calories.toFixed(1)} kcal
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {selectedFood.alimento} - {grams}g
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {selectedFood.categoria}
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    Proteína: {protein.toFixed(1)} g
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-blue-50 p-3 rounded-lg text-center">
+                    <div className="text-lg font-semibold text-blue-700">
+                      {protein.toFixed(1)}g
+                    </div>
+                    <div className="text-xs text-blue-600">Proteína</div>
                   </div>
-                  <div>
-                    Carboidrato: {carbs.toFixed(1)} g
+                  <div className="bg-green-50 p-3 rounded-lg text-center">
+                    <div className="text-lg font-semibold text-green-700">
+                      {carbs.toFixed(1)}g
+                    </div>
+                    <div className="text-xs text-green-600">Carboidrato</div>
                   </div>
-                  <div>
-                    Gorduras: {fat.toFixed(1)} g
+                  <div className="bg-yellow-50 p-3 rounded-lg text-center">
+                    <div className="text-lg font-semibold text-yellow-700">
+                      {fat.toFixed(1)}g
+                    </div>
+                    <div className="text-xs text-yellow-600">Gorduras</div>
                   </div>
+                  <div className="bg-purple-50 p-3 rounded-lg text-center">
+                    <div className="text-lg font-semibold text-purple-700">
+                      {fiber.toFixed(1)}g
+                    </div>
+                    <div className="text-xs text-purple-600">Fibras</div>
+                  </div>
+                </div>
+
+                <div className="text-xs text-gray-500 text-center">
+                  Dados baseados na Tabela Brasileira de Composição de Alimentos (TACO) - 4ª edição
                 </div>
               </div>
             )}

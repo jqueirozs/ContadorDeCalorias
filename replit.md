@@ -123,6 +123,8 @@ This is a full-stack weight loss application built with TypeScript, React, Expre
 
 ```
 Changelog:
+- June 22, 2025. Updated TACO database with complete 4th edition (394 food items) for calorie calculator
+- June 22, 2025. Enhanced calculator system with three options: calorie, BMI, and caloric expenditure calculators
 - June 22, 2025. Enhanced behavior reflection with comprehensive daily balance questions
 - June 21, 2025. Implemented meal photo recognition and automatic nutrient tracking
 - June 21, 2025. Implemented voice input for meal logging with AI processing
