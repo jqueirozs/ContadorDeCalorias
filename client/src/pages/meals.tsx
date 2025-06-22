@@ -71,11 +71,11 @@ export default function Meals() {
 
   const todayMeals = meals || [];
   const mealsByType = {
-    breakfast: todayMeals.find((m: any) => m.type === "breakfast"),
-    lunch: todayMeals.find((m: any) => m.type === "lunch"),
+    breakfast: todayMeals.filter((m: any) => m.type === "breakfast"),
+    lunch: todayMeals.filter((m: any) => m.type === "lunch"),
     snack: todayMeals.filter((m: any) => m.type === "snack"),
-    dinner: todayMeals.find((m: any) => m.type === "dinner"),
-    supper: todayMeals.find((m: any) => m.type === "supper"),
+    dinner: todayMeals.filter((m: any) => m.type === "dinner"),
+    supper: todayMeals.filter((m: any) => m.type === "supper"),
   };
 
   const totalPointsToday = todayMeals.reduce((sum: number, meal: any) => sum + (meal.points || 0), 0);
@@ -190,80 +190,88 @@ export default function Meals() {
                 ) : (
                   <div className="space-y-6">
                     {["breakfast", "lunch", "snack", "dinner", "supper"].map((mealType) => {
-                      const meal = mealType === "snack" 
-                        ? mealsByType.snack[0] 
-                        : mealsByType[mealType as keyof typeof mealsByType];
+                      const mealsOfType = mealsByType[mealType as keyof typeof mealsByType] as any[];
                       
                       return (
                         <div key={mealType} className="border-l-2 border-neutral-200 pl-4">
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-medium text-neutral-800">
                               {getMealTypeLabel(mealType)}
+                              {mealsOfType.length > 1 && (
+                                <span className="text-sm text-neutral-500 ml-2">
+                                  ({mealsOfType.length} registros)
+                                </span>
+                              )}
                             </h4>
-                            {!meal && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setShowMealForm(true)}
-                              >
-                                Registrar
-                              </Button>
-                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setShowMealForm(true)}
+                            >
+                              {mealsOfType.length > 0 ? "Adicionar" : "Registrar"}
+                            </Button>
                           </div>
                           
-                          {meal ? (
-                            <Card className="bg-neutral-50">
-                              <CardContent className="p-4">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex-1">
-                                    <div className="flex items-center space-x-2 mb-2">
-                                      <Badge className={getMealTypeColor(meal.type)}>
-                                        {getMealTypeLabel(meal.type)}
-                                      </Badge>
-                                      <div className="flex items-center text-sm text-neutral-500">
-                                        <Clock className="w-3 h-3 mr-1" />
-                                        {meal.time}
-                                      </div>
-                                      {meal.photoUrl && (
-                                        <div className="flex items-center text-sm text-green-600">
-                                          <Camera className="w-3 h-3 mr-1" />
-                                          <span>Com foto</span>
+                          {mealsOfType.length > 0 ? (
+                            <div className="space-y-3">
+                              {mealsOfType.map((meal: any, index: number) => (
+                                <Card key={meal.id} className="bg-neutral-50">
+                                  <CardContent className="p-4">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex-1">
+                                        <div className="flex items-center space-x-2 mb-2">
+                                          <Badge className={getMealTypeColor(meal.type)}>
+                                            {getMealTypeLabel(meal.type)}
+                                            {mealsOfType.length > 1 && (
+                                              <span className="ml-1">#{index + 1}</span>
+                                            )}
+                                          </Badge>
+                                          <div className="flex items-center text-sm text-neutral-500">
+                                            <Clock className="w-3 h-3 mr-1" />
+                                            {meal.time}
+                                          </div>
+                                          {meal.photoUrl && (
+                                            <div className="flex items-center text-sm text-green-600">
+                                              <Camera className="w-3 h-3 mr-1" />
+                                              <span>Com foto</span>
+                                            </div>
+                                          )}
                                         </div>
-                                      )}
-                                    </div>
-                                    <p className="text-neutral-700 mb-2">{meal.foods}</p>
-                                    
-                                    {/* Show nutrient information if available */}
-                                    {(meal.calories || meal.protein || meal.carbohydrates || meal.fat) && (
-                                      <div className="mt-3">
-                                        <NutrientDisplay 
-                                          nutrients={{
-                                            calories: meal.calories,
-                                            protein: parseFloat(meal.protein || '0'),
-                                            carbohydrates: parseFloat(meal.carbohydrates || '0'),
-                                            fat: parseFloat(meal.fat || '0'),
-                                            fiber: parseFloat(meal.fiber || '0'),
-                                            sugar: parseFloat(meal.sugar || '0'),
-                                            sodium: parseFloat(meal.sodium || '0'),
-                                          }}
-                                          className="border-0 bg-white"
-                                        />
+                                        <p className="text-neutral-700 mb-2">{meal.foods}</p>
+                                        
+                                        {/* Show nutrient information if available */}
+                                        {(meal.calories || meal.protein || meal.carbohydrates || meal.fat) && (
+                                          <div className="mt-3">
+                                            <NutrientDisplay 
+                                              nutrients={{
+                                                calories: meal.calories,
+                                                protein: parseFloat(meal.protein || '0'),
+                                                carbohydrates: parseFloat(meal.carbohydrates || '0'),
+                                                fat: parseFloat(meal.fat || '0'),
+                                                fiber: parseFloat(meal.fiber || '0'),
+                                                sugar: parseFloat(meal.sugar || '0'),
+                                                sodium: parseFloat(meal.sodium || '0'),
+                                              }}
+                                              className="border-0 bg-white"
+                                            />
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
-                                  </div>
-                                  <div className="text-right ml-4">
-                                    <div className="text-sm font-medium text-secondary">
-                                      +{meal.points} pts
-                                    </div>
-                                    {meal.analysisConfidence && (
-                                      <div className="text-xs text-neutral-500 mt-1">
-                                        IA: {Math.round(parseFloat(meal.analysisConfidence) * 100)}%
+                                      <div className="text-right ml-4">
+                                        <div className="text-sm font-medium text-secondary">
+                                          +{meal.points} pts
+                                        </div>
+                                        {meal.analysisConfidence && (
+                                          <div className="text-xs text-neutral-500 mt-1">
+                                            IA: {Math.round(parseFloat(meal.analysisConfidence) * 100)}%
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
                           ) : (
                             <div className="text-sm text-neutral-500 italic">
                               Não registrado
