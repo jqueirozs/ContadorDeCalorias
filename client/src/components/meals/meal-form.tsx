@@ -20,9 +20,10 @@ interface MealFormProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDate?: string;
+  editingMeal?: any;
 }
 
-export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProps) {
+export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }: MealFormProps) {
   const { toast } = useToast();
   const [mealType, setMealType] = useState("");
   const [time, setTime] = useState("");
@@ -42,6 +43,39 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
       setDate(selectedDate);
     }
   }, [selectedDate]);
+
+  // Load meal data when editing
+  useEffect(() => {
+    if (editingMeal) {
+      setMealType(editingMeal.type || "");
+      setTime(editingMeal.time || "");
+      setFoods(editingMeal.foods || "");
+      setCalories(editingMeal.calories ? editingMeal.calories.toString() : "");
+      setDate(editingMeal.date || selectedDate || new Date().toISOString().split('T')[0]);
+      
+      // Load nutrients if available
+      if (editingMeal.protein || editingMeal.carbohydrates || editingMeal.fat) {
+        setNutrients({
+          calories: editingMeal.calories || 0,
+          protein: parseFloat(editingMeal.protein || '0'),
+          carbohydrates: parseFloat(editingMeal.carbohydrates || '0'),
+          fat: parseFloat(editingMeal.fat || '0'),
+          fiber: parseFloat(editingMeal.fiber || '0'),
+          sugar: parseFloat(editingMeal.sugar || '0'),
+          sodium: parseFloat(editingMeal.sodium || '0'),
+        });
+      }
+    } else {
+      // Reset form when not editing
+      setMealType("");
+      setTime("");
+      setFoods("");
+      setCalories("");
+      setDate(selectedDate || new Date().toISOString().split('T')[0]);
+      setNutrients(null);
+      setPhotoAnalysis(null);
+    }
+  }, [editingMeal, selectedDate]);
 
   // Update voice prompt when form data changes
   useEffect(() => {
@@ -130,7 +164,11 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
 
   const createMealMutation = useMutation({
     mutationFn: async (data: { type: string; time: string; foods: string; calories?: number; date: string }) => {
-      return await apiRequest("POST", "/api/meals", data);
+      if (editingMeal) {
+        return await apiRequest("PUT", `/api/meals/${editingMeal.id}`, data);
+      } else {
+        return await apiRequest("POST", "/api/meals", data);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/meals"] });
@@ -147,12 +185,16 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
       setPhotoAnalysis(null);
       setIsPhotoAnalyzing(false);
       
-      setShowPointsAnimation(true);
+      if (!editingMeal) {
+        setShowPointsAnimation(true);
+      }
       onClose();
       
       toast({
-        title: "Refeição registrada!",
-        description: "Sua refeição foi registrada com sucesso e você ganhou 10 pontos!",
+        title: editingMeal ? "Refeição atualizada!" : "Refeição registrada!",
+        description: editingMeal 
+          ? "Sua refeição foi atualizada com sucesso!" 
+          : "Sua refeição foi registrada com sucesso e você ganhou 10 pontos!",
       });
     },
     onError: (error) => {
@@ -221,7 +263,7 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Registrar Refeição</DialogTitle>
+            <DialogTitle>{editingMeal ? "Editar Refeição" : "Registrar Refeição"}</DialogTitle>
           </DialogHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -422,8 +464,8 @@ export default function MealForm({ isOpen, onClose, selectedDate }: MealFormProp
               disabled={createMealMutation.isPending || isPhotoAnalyzing || (!mealType || !time || !foods)}
               className="flex-1 bg-primary hover:bg-primary/90"
             >
-              {createMealMutation.isPending ? "Registrando..." : 
-               isPhotoAnalyzing ? "Analisando foto..." : "Registrar"}
+              {createMealMutation.isPending ? (editingMeal ? "Atualizando..." : "Registrando...") : 
+               isPhotoAnalyzing ? "Analisando foto..." : (editingMeal ? "Atualizar" : "Registrar")}
             </Button>
           </div>
         </DialogContent>

@@ -69,6 +69,7 @@ export interface IStorage {
   getMeals(userId: string, date?: string): Promise<Meal[]>;
   createMeal(meal: InsertMeal): Promise<Meal>;
   getRecentMeals(userId: string, limit?: number): Promise<Meal[]>;
+  updateMeal(mealId: number, userId: string, mealData: any): Promise<Meal>;
 
   // Weight tracking operations
   getWeightEntries(userId: string, limit?: number): Promise<WeightEntry[]>;
@@ -91,14 +92,15 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  db: any;
   // User operations (IMPORTANT: mandatory for Replit Auth)
   async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
+    const [user] = await this.db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
+    const [user] = await this.db
       .insert(users)
       .values(userData)
       .onConflictDoUpdate({
@@ -114,21 +116,21 @@ export class DatabaseStorage implements IStorage {
 
   // Course operations
   async getCourseModules(): Promise<CourseModule[]> {
-    return await db.select().from(courseModules).orderBy(courseModules.order);
+    return await this.db.select().from(courseModules).orderBy(courseModules.order);
   }
 
   async getUserProgress(userId: string): Promise<UserProgress[]> {
-    return await db.select().from(userProgress).where(eq(userProgress.userId, userId));
+    return await this.db.select().from(userProgress).where(eq(userProgress.userId, userId));
   }
 
   async markModuleComplete(userId: string, moduleId: number): Promise<UserProgress> {
-    const [existing] = await db
+    const [existing] = await this.db
       .select()
       .from(userProgress)
       .where(and(eq(userProgress.userId, userId), eq(userProgress.moduleId, moduleId)));
 
     if (existing) {
-      const [updated] = await db
+      const [updated] = await this.db
         .update(userProgress)
         .set({ completed: true, completedAt: new Date() })
         .where(eq(userProgress.id, existing.id))
@@ -139,7 +141,7 @@ export class DatabaseStorage implements IStorage {
 
       return updated;
     } else {
-      const [newProgress] = await db
+      const [newProgress] = await this.db
         .insert(userProgress)
         .values({
           userId,
@@ -158,7 +160,7 @@ export class DatabaseStorage implements IStorage {
 
   // Forum operations
   async getForumTopics(limit = 20): Promise<(ForumTopic & { user: User; commentCount: number })[]> {
-    const topicsWithUsers = await db
+    const topicsWithUsers = await this.db
       .select({
         id: forumTopics.id,
         userId: forumTopics.userId,
@@ -181,7 +183,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getForumTopic(id: number): Promise<(ForumTopic & { user: User }) | undefined> {
-    const [topic] = await db
+    const [topic] = await this.db
       .select({
         id: forumTopics.id,
         userId: forumTopics.userId,
@@ -200,7 +202,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createForumTopic(topic: InsertForumTopic): Promise<ForumTopic> {
-    const [newTopic] = await db.insert(forumTopics).values(topic).returning();
+    const [newTopic] = await this.db.insert(forumTopics).values(topic).returning();
 
     // Award points for creating topic
     await this.addPoints(topic.userId, "Tópico criado", 20, new Date().toISOString().split('T')[0]);
@@ -209,7 +211,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTopicComments(topicId: number): Promise<(ForumComment & { user: User })[]> {
-    return await db
+    return await this.db
       .select({
         id: forumComments.id,
         topicId: forumComments.topicId,
@@ -226,7 +228,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createComment(comment: InsertForumComment): Promise<ForumComment> {
-    const [newComment] = await db.insert(forumComments).values(comment).returning();
+    const [newComment] = await this.db.insert(forumComments).values(comment).returning();
 
     // Award points for commenting
     await this.addPoints(comment.userId, "Comentário criado", 10, new Date().toISOString().split('T')[0]);
@@ -235,14 +237,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async likeForumTopic(topicId: number): Promise<void> {
-    await db
+    await this.db
       .update(forumTopics)
       .set({ likes: sql`${forumTopics.likes} + 1` })
       .where(eq(forumTopics.id, topicId));
   }
 
   async likeComment(commentId: number): Promise<void> {
-    await db
+    await this.db
       .update(forumComments)
       .set({ likes: sql`${forumComments.likes} + 1` })
       .where(eq(forumComments.id, commentId));
@@ -250,11 +252,11 @@ export class DatabaseStorage implements IStorage {
 
   // Exercise operations
   async getExercises(): Promise<Exercise[]> {
-    return await db.select().from(exercises);
+    return await this.db.select().from(exercises);
   }
 
   async getDailyExercises(userId: string, date: string): Promise<(DailyExercise & { exercise: Exercise })[]> {
-    return await db
+    return await this.db
       .select({
         id: dailyExercises.id,
         userId: dailyExercises.userId,
@@ -280,7 +282,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     // Get 10 random exercises
-    const allExercises = await db.select().from(exercises);
+    const allExercises = await this.db.select().from(exercises);
     const randomExercises = allExercises
       .sort(() => Math.random() - 0.5)
       .slice(0, Math.min(10, allExercises.length));
@@ -292,7 +294,7 @@ export class DatabaseStorage implements IStorage {
       date,
     }));
 
-    const newDailyExercises = await db
+    const newDailyExercises = await this.db
       .insert(dailyExercises)
       .values(dailyExerciseValues)
       .returning();
@@ -301,7 +303,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async submitExerciseAnswer(exerciseId: number, userId: string, answer: string, date: string): Promise<DailyExercise> {
-    const [exercise] = await db.select().from(exercises).where(eq(exercises.id, exerciseId));
+    const [exercise] = await this.db.select().from(exercises).where(eq(exercises.id, exerciseId));
 
     let correct = false;
     if (exercise?.correctOption !== null && exercise?.correctOption !== undefined) {
@@ -315,7 +317,7 @@ export class DatabaseStorage implements IStorage {
       correct = exercise.answer.toLowerCase() === answer.toLowerCase();
     }
 
-    const [updated] = await db
+    const [updated] = await this.db
       .update(dailyExercises)
       .set({
         userAnswer: answer,
@@ -343,7 +345,7 @@ export class DatabaseStorage implements IStorage {
 
   // Behavior reflection operations
   async getBehaviorReflection(userId: string, date: string): Promise<BehaviorReflection | undefined> {
-    const [reflection] = await db
+    const [reflection] = await this.db
       .select()
       .from(behaviorReflections)
       .where(and(eq(behaviorReflections.userId, userId), eq(behaviorReflections.date, date)));
@@ -351,7 +353,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBehaviorReflection(reflection: InsertBehaviorReflection): Promise<BehaviorReflection> {
-    const [newReflection] = await db.insert(behaviorReflections).values(reflection).returning();
+    const [newReflection] = await this.db.insert(behaviorReflections).values(reflection).returning();
 
     // Award points for completing reflection
     await this.addPoints(reflection.userId, "Espelho preenchido", 30, reflection.date);
@@ -360,7 +362,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateBehaviorReflection(id: number, reflection: Partial<InsertBehaviorReflection>): Promise<BehaviorReflection> {
-    const [updated] = await db
+    const [updated] = await this.db
       .update(behaviorReflections)
       .set(reflection)
       .where(eq(behaviorReflections.id, id))
@@ -371,12 +373,12 @@ export class DatabaseStorage implements IStorage {
   // Meal operations
   async getMeals(userId: string, date?: string): Promise<Meal[]> {
     const whereConditions = [eq(meals.userId, userId)];
-    
+
     if (date) {
       whereConditions.push(eq(meals.date, date));
     }
 
-    return await db
+    return await this.db
       .select()
       .from(meals)
       .where(and(...whereConditions))
@@ -394,12 +396,12 @@ export class DatabaseStorage implements IStorage {
     };
 
     const points = pointsMap[meal.type] || 10;
-    
+
     // Additional points for photo analysis
     const photoBonus = meal.photoUrl ? 5 : 0;
     const totalPoints = points + photoBonus;
 
-    const [newMeal] = await db
+    const [newMeal] = await this.db
       .insert(meals)
       .values({ ...meal, points: totalPoints })
       .returning();
@@ -408,14 +410,14 @@ export class DatabaseStorage implements IStorage {
     const pointsDescription = meal.photoUrl 
       ? `Refeição registrada com foto: ${meal.type}`
       : `Refeição registrada: ${meal.type}`;
-      
+
     await this.addPoints(meal.userId, pointsDescription, totalPoints, meal.date);
 
     return newMeal;
   }
 
   async getRecentMeals(userId: string, limit = 5): Promise<Meal[]> {
-    return await db
+    return await this.db
       .select()
       .from(meals)
       .where(eq(meals.userId, userId))
@@ -423,9 +425,39 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
   }
 
+  async updateMeal(mealId: number, userId: string, mealData: any): Promise<Meal> {
+    const [updatedMeal] = await this.db
+      .update(meals)
+      .set({
+        type: mealData.type,
+        time: mealData.time,
+        foods: mealData.foods,
+        calories: mealData.calories,
+        date: mealData.date,
+        protein: mealData.protein,
+        carbohydrates: mealData.carbohydrates,
+        fat: mealData.fat,
+        fiber: mealData.fiber,
+        sugar: mealData.sugar,
+        sodium: mealData.sodium,
+        analysisConfidence: mealData.analysisConfidence,
+        identifiedFoods: mealData.identifiedFoods,
+        estimatedPortions: mealData.estimatedPortions,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(meals.id, mealId), eq(meals.userId, userId)))
+      .returning();
+
+    if (!updatedMeal) {
+      throw new Error("Meal not found or you don't have permission to update it");
+    }
+
+    return updatedMeal;
+  }
+
   // Weight tracking operations
   async getWeightEntries(userId: string, limit = 30): Promise<WeightEntry[]> {
-    return await db
+    return await this.db
       .select()
       .from(weightEntries)
       .where(eq(weightEntries.userId, userId))
@@ -434,10 +466,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createWeightEntry(entry: InsertWeightEntry): Promise<WeightEntry> {
-    const [newEntry] = await db.insert(weightEntries).values(entry).returning();
+    const [newEntry] = await this.db.insert(weightEntries).values(entry).returning();
 
     // Update user's current weight
-    await db
+    await this.db
       .update(users)
       .set({ currentWeight: entry.weight, updatedAt: new Date() })
       .where(eq(users.id, entry.userId));
@@ -449,7 +481,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getLatestWeight(userId: string): Promise<WeightEntry | undefined> {
-    const [latest] = await db
+    const [latest] = await this.db
       .select()
       .from(weightEntries)
       .where(eq(weightEntries.userId, userId))
@@ -461,7 +493,7 @@ export class DatabaseStorage implements IStorage {
   // Points operations
   async addPoints(userId: string, activity: string, points: number, date: string): Promise<void> {
     // Add to points history
-    await db.insert(pointsHistory).values({
+    await this.db.insert(pointsHistory).values({
       userId,
       activity,
       points,
@@ -469,7 +501,7 @@ export class DatabaseStorage implements IStorage {
     });
 
     // Update user's total points
-    await db
+    await this.db
       .update(users)
       .set({
         totalPoints: sql`${users.totalPoints} + ${points}`,
@@ -479,7 +511,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPointsHistory(userId: string, limit = 50): Promise<PointsHistory[]> {
-    return await db
+    return await this.db
       .select()
       .from(pointsHistory)
       .where(eq(pointsHistory.userId, userId))
@@ -488,7 +520,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserTotalPoints(userId: string): Promise<number> {
-    const [user] = await db
+    const [user] = await this.db
       .select({ totalPoints: users.totalPoints })
       .from(users)
       .where(eq(users.id, userId));
@@ -506,7 +538,7 @@ export class DatabaseStorage implements IStorage {
     const today = new Date().toISOString().split('T')[0];
 
     // Get user data
-    const [user] = await db
+    const [user] = await this.db
       .select({
         currentWeight: users.currentWeight,
         totalPoints: users.totalPoints,
@@ -515,7 +547,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
 
     // Get today's completed exercises
-    const completedExercises = await db
+    const completedExercises = await this.db
       .select()
       .from(dailyExercises)
       .where(
@@ -527,7 +559,7 @@ export class DatabaseStorage implements IStorage {
       );
 
     // Get today's meals
-    const todayMeals = await db
+    const todayMeals = await this.db
       .select()
       .from(meals)
       .where(and(eq(meals.userId, userId), eq(meals.date, today)));

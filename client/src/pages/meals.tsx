@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Plus, Search, Utensils, Camera } from "lucide-react";
+import { Calendar, Clock, Plus, Search, Utensils, Camera, Edit } from "lucide-react";
 import NutrientDisplay from "@/components/ui/nutrient-display";
 
 export default function Meals() {
@@ -16,6 +16,7 @@ export default function Meals() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [showMealForm, setShowMealForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingMeal, setEditingMeal] = useState(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -257,15 +258,24 @@ export default function Meals() {
                                           </div>
                                         )}
                                       </div>
-                                      <div className="text-right ml-4">
+                                      <div className="text-right ml-4 flex flex-col items-end space-y-2">
                                         <div className="text-sm font-medium text-secondary">
                                           +{meal.points} pts
                                         </div>
                                         {meal.analysisConfidence && (
-                                          <div className="text-xs text-neutral-500 mt-1">
+                                          <div className="text-xs text-neutral-500">
                                             IA: {Math.round(parseFloat(meal.analysisConfidence) * 100)}%
                                           </div>
                                         )}
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => setEditingMeal(meal)}
+                                          className="h-7 px-2"
+                                        >
+                                          <Edit className="w-3 h-3 mr-1" />
+                                          Editar
+                                        </Button>
                                       </div>
                                     </div>
                                   </CardContent>
@@ -323,10 +333,19 @@ export default function Meals() {
                               </div>
                               <p className="text-neutral-700">{meal.foods}</p>
                             </div>
-                            <div className="text-right ml-4">
+                            <div className="text-right ml-4 flex flex-col items-end space-y-2">
                               <div className="text-sm font-medium text-secondary">
                                 +{meal.points} pts
                               </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setEditingMeal(meal)}
+                                className="h-7 px-2"
+                              >
+                                <Edit className="w-3 h-3 mr-1" />
+                                Editar
+                              </Button>
                             </div>
                           </div>
                         </CardContent>
@@ -344,6 +363,13 @@ export default function Meals() {
         isOpen={showMealForm} 
         onClose={() => setShowMealForm(false)} 
         selectedDate={selectedDate}
+        />
+      
+      <MealForm 
+        isOpen={!!editingMeal} 
+        onClose={() => setEditingMeal(null)} 
+        selectedDate={selectedDate}
+        editingMeal={editingMeal}
         />
     </>
   );
