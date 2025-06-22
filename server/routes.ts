@@ -277,6 +277,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/meals/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const mealId = parseInt(req.params.id);
+      await storage.deleteMeal(mealId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting meal:", error);
+      res.status(500).json({ message: "Failed to delete meal" });
+    }
+  });
+
   // Weight tracking routes
   app.get('/api/weight', isAuthenticated, async (req: any, res) => {
     try {

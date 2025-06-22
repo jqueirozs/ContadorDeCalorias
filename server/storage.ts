@@ -431,33 +431,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateMeal(mealId: number, userId: string, mealData: any): Promise<Meal> {
-    const [updatedMeal] = await this.db
-      .update(meals)
+    const [meal] = await this.db.update(meals)
       .set({
         type: mealData.type,
         time: mealData.time,
         foods: mealData.foods,
         calories: mealData.calories,
+        protein: mealData.protein?.toString(),
+        carbohydrates: mealData.carbohydrates?.toString(),
+        fat: mealData.fat?.toString(),
+        fiber: mealData.fiber?.toString(),
+        sugar: mealData.sugar?.toString(),
+        sodium: mealData.sodium?.toString(),
         date: mealData.date,
-        protein: mealData.protein,
-        carbohydrates: mealData.carbohydrates,
-        fat: mealData.fat,
-        fiber: mealData.fiber,
-        sugar: mealData.sugar,
-        sodium: mealData.sodium,
-        analysisConfidence: mealData.analysisConfidence,
+        analysisConfidence: mealData.analysisConfidence?.toString(),
         identifiedFoods: mealData.identifiedFoods,
         estimatedPortions: mealData.estimatedPortions,
-        updatedAt: new Date(),
       })
       .where(and(eq(meals.id, mealId), eq(meals.userId, userId)))
       .returning();
 
-    if (!updatedMeal) {
-      throw new Error("Meal not found or you don't have permission to update it");
-    }
+    return meal;
+  }
 
-    return updatedMeal;
+  async deleteMeal(mealId: number, userId: string): Promise<void> {
+    await this.db.delete(meals)
+      .where(and(eq(meals.id, mealId), eq(meals.userId, userId)));
   }
 
   // Weight tracking operations

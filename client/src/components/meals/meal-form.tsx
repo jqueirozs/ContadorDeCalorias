@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VoiceInput from "@/components/ui/voice-input";
 import PhotoUpload from "@/components/ui/photo-upload";
 import { parseMealFromVoice, generateVoicePrompt } from "@/lib/voiceParser";
-import { Mic, Edit3, Camera } from "lucide-react";
+import { Mic, Edit3, Camera, Trash2 } from "lucide-react";
 
 interface MealFormProps {
   isOpen: boolean;
@@ -52,7 +52,7 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
       setFoods(editingMeal.foods || "");
       setCalories(editingMeal.calories ? editingMeal.calories.toString() : "");
       setDate(editingMeal.date || selectedDate || new Date().toISOString().split('T')[0]);
-      
+
       // Load nutrients if available
       if (editingMeal.protein || editingMeal.carbohydrates || editingMeal.fat) {
         setNutrients({
@@ -93,7 +93,7 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
       // Send to AI for processing
       const response = await apiRequest("POST", "/api/voice/process", { transcript });
       const processed = await response.json();
-      
+
       // Apply processed data
       if (processed.mealType) setMealType(processed.mealType);
       if (processed.time) setTime(processed.time);
@@ -107,10 +107,10 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
       });
     } catch (error) {
       console.error("Error processing voice:", error);
-      
+
       // Fallback to local processing
       const parsed = parseMealFromVoice(transcript);
-      
+
       if (parsed.type) setMealType(parsed.type);
       if (parsed.time) setTime(parsed.time);
       if (parsed.foods) setFoods(parsed.foods);
@@ -127,7 +127,7 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
   const handlePhotoAnalyzed = (analysis: any) => {
     setIsPhotoAnalyzing(false);
     setPhotoAnalysis(analysis);
-    
+
     if (analysis.error) {
       toast({
         title: "Erro na análise",
@@ -136,12 +136,12 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
       });
       return;
     }
-    
+
     // Auto-fill form based on photo analysis
     if (analysis.mealType) setMealType(analysis.mealType);
     if (analysis.description) setFoods(analysis.description);
     if (analysis.nutrients?.calories) setCalories(Math.round(analysis.nutrients.calories).toString());
-    
+
     // Set current time as default
     if (!time) {
       const now = new Date();
@@ -149,7 +149,7 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
       const minutes = now.getMinutes().toString().padStart(2, '0');
       setTime(`${hours}:${minutes}`);
     }
-    
+
     setNutrients(analysis.nutrients);
 
     toast({
@@ -174,7 +174,7 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
       queryClient.invalidateQueries({ queryKey: ["/api/meals"] });
       queryClient.invalidateQueries({ queryKey: ["/api/meals/recent"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
-      
+
       setMealType("");
       setTime("");
       setFoods("");
@@ -184,12 +184,12 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
       setNutrients(null);
       setPhotoAnalysis(null);
       setIsPhotoAnalyzing(false);
-      
+
       if (!editingMeal) {
         setShowPointsAnimation(true);
       }
       onClose();
-      
+
       toast({
         title: editingMeal ? "Refeição atualizada!" : "Refeição registrada!",
         description: editingMeal 
@@ -212,6 +212,41 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
       toast({
         title: "Erro",
         description: "Não foi possível registrar a refeição. Tente novamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMealMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("DELETE", `/api/meals/${editingMeal.id}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Refeição excluída!",
+        description: "Sua refeição foi excluída com sucesso.",
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/meals"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meals/recent"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      onClose();
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Não autorizado",
+          description: "Você foi desconectado. Redirecionando...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir a refeição.",
         variant: "destructive",
       });
     },
@@ -467,10 +502,25 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
               {createMealMutation.isPending ? (editingMeal ? "Atualizando..." : "Registrando...") : 
                isPhotoAnalyzing ? "Analisando foto..." : (editingMeal ? "Atualizar" : "Registrar")}
             </Button>
+                         {editingMeal && (
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={() => deleteMealMutation.mutate()}
+                                    disabled={deleteMealMutation.isPending}
+                                >
+                                    {deleteMealMutation.isPending ? "Excluindo..." : (
+                                        <>
+                                            <Trash2 className="w-4 h-4 mr-2" />
+                                            Excluir
+                                        </>
+                                    )}
+                                </Button>
+                            )}
           </div>
         </DialogContent>
       </Dialog>
-      
+
       <PointsAnimation
         points={10}
         show={showPointsAnimation}
