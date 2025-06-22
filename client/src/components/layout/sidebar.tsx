@@ -52,7 +52,7 @@ export default function Sidebar() {
         <div className="p-6 border-b border-neutral-200">
           <div className="flex items-center justify-center">
             <img 
-              src="/attached_assets/logo ei dr jorge sampaio_1750552978614.jpg" 
+              src="/attached_assets/logo%20ei%20dr%20jorge%20sampaio_1750552978614.jpg" 
               alt="Emagrecimento Inteligente" 
               className="h-16 w-auto object-contain"
             />
