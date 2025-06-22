@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Heart, BarChart3, Play, Users, Brain, FlipHorizontal2, Utensils, TrendingUp, LogOut, Menu, X, Calculator } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 import Emagrecimento_Inteligente__1_ from "@assets/Emagrecimento Inteligente (1).png";
@@ -16,14 +16,14 @@ export default function Sidebar() {
   };
 
   const navigationItems = [
-    { path: "/", icon: BarChart3, label: "Dashboard" },
-    { path: "/curso", icon: Play, label: "Curso" },
-    { path: "/comunidade", icon: Users, label: "Comunidade" },
-    { path: "/exercicios", icon: Brain, label: "Academia da Mente" },
-    { path: "/espelho", icon: FlipHorizontal2, label: "Espelho" },
-    { path: "/calculadora", icon: Calculator, label: "Calculadora" },
-    { path: "/refeicoes", icon: Utensils, label: "Refeições" },
-    { path: "/evolucao", icon: TrendingUp, label: "Evolução" },
+    { path: "/", emoji: "📊", label: "Dashboard" },
+    { path: "/curso", emoji: "▶️", label: "Curso" },
+    { path: "/comunidade", emoji: "👥", label: "Comunidade" },
+    { path: "/exercicios", emoji: "🧠", label: "Academia da Mente" },
+    { path: "/espelho", emoji: "🪞", label: "Espelho" },
+    { path: "/calculadora", emoji: "🧮", label: "Calculadora" },
+    { path: "/refeicoes", emoji: "🍽️", label: "Refeições" },
+    { path: "/evolucao", emoji: "📈", label: "Evolução" },
   ];
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -62,7 +62,6 @@ export default function Sidebar() {
         {/* Navigation Menu */}
         <nav className="flex-1 p-4 space-y-2">
           {navigationItems.map((item) => {
-            const Icon = item.icon;
             const isActive = location === item.path;
 
             return (
@@ -75,7 +74,7 @@ export default function Sidebar() {
                       : "text-neutral-600 hover:bg-neutral-100"
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <span className="text-lg">{item.emoji}</span>
                   <span className="font-medium">{item.label}</span>
                 </div>
               </Link>
