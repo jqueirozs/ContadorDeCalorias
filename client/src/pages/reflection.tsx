@@ -12,7 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { ToggleButton } from "@/components/ui/toggle-button";
 import { StarRating } from "@/components/ui/star-rating";
-import { Save, CheckCircle, Brain, Lightbulb } from "lucide-react";
+import { Save, CheckCircle, Brain, Lightbulb, Smile } from "lucide-react";
 
 export default function Reflection() {
   const { toast } = useToast();
@@ -220,7 +220,7 @@ export default function Reflection() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center">
-                      <FlipHorizontal2 className="w-5 h-5 mr-2 text-primary" />
+                      <Smile className="w-5 h-5 mr-2 text-primary" />
                       Como está seu humor?
                     </CardTitle>
                   </CardHeader>
