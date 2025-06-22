@@ -45,11 +45,11 @@ export default function Meals() {
   }
 
   const filteredMeals = searchTerm
-    ? (meals || []).filter((meal: any) =>
+    ? ((meals as Array<{ foods: string; type: string }>) || []).filter((meal: { foods: string; type: string }) =>
         meal.foods.toLowerCase().includes(searchTerm.toLowerCase()) ||
         meal.type.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : meals || [];
+    : (meals as Array<any>) || [];
 
   const getMealTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -73,16 +73,16 @@ export default function Meals() {
     return colors[type] || "bg-gray-100 text-gray-800";
   };
 
-  const todayMeals = meals || [];
+  const todayMeals = (meals as Array<{ type: string; points?: number }>) || [];
   const mealsByType = {
-    breakfast: todayMeals.filter((m: any) => m.type === "breakfast"),
-    lunch: todayMeals.filter((m: any) => m.type === "lunch"),
-    snack: todayMeals.filter((m: any) => m.type === "snack"),
-    dinner: todayMeals.filter((m: any) => m.type === "dinner"),
-    supper: todayMeals.filter((m: any) => m.type === "supper"),
+    breakfast: todayMeals.filter((m: { type: string }) => m.type === "breakfast"),
+    lunch: todayMeals.filter((m: { type: string }) => m.type === "lunch"),
+    snack: todayMeals.filter((m: { type: string }) => m.type === "snack"),
+    dinner: todayMeals.filter((m: { type: string }) => m.type === "dinner"),
+    supper: todayMeals.filter((m: { type: string }) => m.type === "supper"),
   };
 
-  const totalPointsToday = todayMeals.reduce((sum: number, meal: any) => sum + (meal.points || 0), 0);
+  const totalPointsToday = todayMeals.reduce((sum: number, meal: { points?: number }) => sum + (meal.points || 0), 0);
 
   return (
     <>

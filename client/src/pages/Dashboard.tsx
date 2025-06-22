@@ -43,22 +43,48 @@ export default function Dashboard() {
     }
   }, [user, isLoading, toast]);
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery<{
+    currentWeight: number | null;
+    totalPoints: number;
+    exercisesCompleted: number;
+    mealsToday: number;
+    reflectionCompleted: boolean;
+    hasReflectionToday?: boolean;
+    exercisesCompletedToday?: number;
+  }>({
     queryKey: ["/api/dashboard/stats"],
     retry: false,
   });
 
-  const { data: weightRecords } = useQuery({
-    queryKey: ["/api/weight-records"],
+  const { data: weightRecords } = useQuery<Array<{
+    id: number;
+    weight: string;
+    date: string;
+    notes?: string;
+  }>>({
+    queryKey: ["/api/weight"],
     retry: false,
   });
 
-  const { data: recentMeals } = useQuery({
-    queryKey: ["/api/meals"],
+  const { data: recentMeals } = useQuery<Array<{
+    id: number;
+    type: string;
+    foods: string;
+    time: string;
+    pointsEarned?: number;
+    mealType?: string;
+  }>>({
+    queryKey: ["/api/meals/recent"],
     retry: false,
   });
 
-  const { data: forumTopics } = useQuery({
+  const { data: forumTopics } = useQuery<Array<{
+    id: number;
+    title: string;
+    user: { firstName?: string; profileImageUrl?: string };
+    likes: number;
+    replies: number;
+  }>>({
     queryKey: ["/api/forum/topics"],
     retry: false,
   });
@@ -93,7 +119,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-neutral-800">
-              Bem-vinda de volta, {user?.firstName || "Usuário"}!
+              Bem-vinda de volta, {(user as any)?.firstName || "Usuário"}!
             </h2>
             <p className="text-neutral-600 mt-1">Aqui está o seu progresso de hoje</p>
           </div>
@@ -116,9 +142,9 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatsCard
             title="Peso Atual"
-            value={`${user?.currentWeight || '---'} kg`}
-            change={weightRecords?.length > 1 ? `${parseFloat(weightRecords[1].weight) - parseFloat(weightRecords[0].weight) > 0 ? '+' : ''}${(parseFloat(weightRecords[0].weight) - parseFloat(weightRecords[1].weight)).toFixed(1)} kg este mês` : undefined}
-            changeType={weightRecords?.length > 1 && parseFloat(weightRecords[0].weight) < parseFloat(weightRecords[1].weight) ? "positive" : "negative"}
+            value={`${(user as any)?.currentWeight || '---'} kg`}
+            change={weightRecords && weightRecords.length > 1 ? `${parseFloat(weightRecords[1].weight) - parseFloat(weightRecords[0].weight) > 0 ? '+' : ''}${(parseFloat(weightRecords[0].weight) - parseFloat(weightRecords[1].weight)).toFixed(1)} kg este mês` : undefined}
+            changeType={weightRecords && weightRecords.length > 1 && parseFloat(weightRecords[0].weight) < parseFloat(weightRecords[1].weight) ? "positive" : "negative"}
             icon={Weight}
             iconColor="bg-secondary/10 text-secondary"
           />
@@ -134,8 +160,8 @@ export default function Dashboard() {
           
           <StatsCard
             title="Exercícios Hoje"
-            value={`${stats?.exercisesCompletedToday || 0}/10`}
-            change={`${10 - (stats?.exercisesCompletedToday || 0)} restantes`}
+            value={`${stats?.exercisesCompleted || 0}/10`}
+            change={`${10 - (stats?.exercisesCompleted || 0)} restantes`}
             changeType="neutral"
             icon={Brain}
             iconColor="bg-primary/10 text-primary"
@@ -144,8 +170,8 @@ export default function Dashboard() {
           <StatsCard
             title="Refeições Hoje"
             value={`${stats?.mealsToday || 0}/5`}
-            change={stats?.mealsToday < 5 ? "Falta registrar" : "Completo!"}
-            changeType={stats?.mealsToday >= 5 ? "positive" : "neutral"}
+            change={stats && stats.mealsToday < 5 ? "Falta registrar" : "Completo!"}
+            changeType={stats && stats.mealsToday >= 5 ? "positive" : "neutral"}
             icon={Utensils}
             iconColor="bg-neutral-100 text-neutral-600"
           />
@@ -169,26 +195,26 @@ export default function Dashboard() {
                 
                 {/* Behavior Mirror */}
                 <div className={`flex items-center justify-between p-4 rounded-lg border ${
-                  stats?.hasReflectionToday 
+                  stats?.reflectionCompleted 
                     ? "bg-secondary/5 border-secondary/20" 
                     : "bg-neutral-50 border-neutral-200"
                 }`}>
                   <div className="flex items-center space-x-4">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      stats?.hasReflectionToday 
+                      stats?.reflectionCompleted 
                         ? "bg-secondary text-white" 
                         : "bg-neutral-300 text-neutral-600"
                     }`}>
-                      {stats?.hasReflectionToday ? <CheckCircle size={16} /> : <Clock size={16} />}
+                      {stats?.reflectionCompleted ? <CheckCircle size={16} /> : <Clock size={16} />}
                     </div>
                     <div>
                       <p className="font-medium text-neutral-800">Espelho do Comportamento</p>
                       <p className="text-sm text-neutral-500">
-                        {stats?.hasReflectionToday ? "Questionário diário concluído" : "Preencher questionário diário"}
+                        {stats?.reflectionCompleted ? "Questionário diário concluído" : "Preencher questionário diário"}
                       </p>
                     </div>
                   </div>
-                  {stats?.hasReflectionToday ? (
+                  {stats?.reflectionCompleted ? (
                     <Badge variant="secondary">+30 pts</Badge>
                   ) : (
                     <Button size="sm" onClick={() => window.location.href = "/reflection"}>
@@ -206,7 +232,7 @@ export default function Dashboard() {
                     <div>
                       <p className="font-medium text-neutral-800">Academia da Mente</p>
                       <p className="text-sm text-neutral-500">
-                        {stats?.exercisesCompletedToday || 0} de 10 exercícios concluídos
+                        {stats?.exercisesCompleted || 0} de 10 exercícios concluídos
                       </p>
                     </div>
                   </div>

@@ -51,7 +51,7 @@ export default function PhotoUpload({ onPhotoAnalyzed, onAnalyzing, disabled, cl
       onPhotoAnalyzed(analysis);
     } catch (error) {
       console.error('Error analyzing photo:', error);
-      onPhotoAnalyzed({ error: error.message });
+      onPhotoAnalyzed({ error: (error as Error).message });
     } finally {
       setIsAnalyzing(false);
     }

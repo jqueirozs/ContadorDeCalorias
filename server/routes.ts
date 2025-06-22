@@ -376,9 +376,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const insights = await generateInsights({
         stats,
-        weightEntries,
+        weightEntries: weightEntries.map(entry => ({
+          weight: entry.weight,
+          date: entry.date,
+          notes: entry.notes || undefined
+        })),
         meals: meals.slice(0, 10), // Last 10 meals
-        reflection: reflections,
+        reflection: reflections ? {
+          moodRating: reflections.moodRating || undefined,
+          hungerLevel: reflections.hungerLevel || undefined,
+          stressLevel: reflections.stressLevel || undefined,
+          exerciseMinutes: reflections.exerciseMinutes || undefined,
+          challenges: reflections.challenges || undefined,
+          achievements: reflections.achievements || undefined,
+          notes: reflections.notes || undefined,
+        } : null,
       });
 
       res.json(insights);

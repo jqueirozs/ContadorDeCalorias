@@ -30,14 +30,14 @@ export default function WeightChart() {
   }
 
   // Transform data for chart
-  const chartData = weightEntries?.map((entry: any) => ({
+  const chartData = (weightEntries as Array<{ id: number; weight: string; date: string; notes?: string }> | undefined)?.map((entry: { id: number; weight: string; date: string; notes?: string }) => ({
     date: new Date(entry.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
     weight: parseFloat(entry.weight),
     fullDate: entry.date,
   })).reverse() || [];
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border border-neutral-200 rounded-lg shadow-lg">

@@ -147,7 +147,7 @@ export default function Course() {
   };
 
   const isVideoCompleted = (videoId: number) => {
-    return userProgress?.some((p: any) => p.videoId === videoId && p.completed) || false;
+    return (userProgress as Array<{ videoId: number; completed: boolean }> | undefined)?.some((p: { videoId: number; completed: boolean }) => p.videoId === videoId && p.completed) || false;
   };
 
   const getModuleProgress = (moduleId: number) => {

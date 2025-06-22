@@ -46,7 +46,7 @@ export default function Exercises() {
         date: data.date,
       });
     },
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/exercises/daily"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       setIsCorrect(response.correct);
@@ -84,9 +84,20 @@ export default function Exercises() {
     return null;
   }
 
-  const completedExercises = dailyExercises?.filter((ex: any) => ex.completedAt) || [];
-  const currentExercise = dailyExercises?.[currentExerciseIndex];
-  const progressPercentage = dailyExercises ? (completedExercises.length / dailyExercises.length) * 100 : 0;
+  const exercisesArray = dailyExercises as Array<{ 
+    completedAt?: string; 
+    exerciseId: number;
+    exercise: { 
+      question: string; 
+      options?: string[]; 
+      answer: string; 
+      correctOption: number; 
+      category?: string;
+    };
+  }> | undefined;
+  const completedExercises = exercisesArray?.filter((ex) => ex.completedAt) || [];
+  const currentExercise = exercisesArray?.[currentExerciseIndex];
+  const progressPercentage = exercisesArray ? (completedExercises.length / exercisesArray.length) * 100 : 0;
 
   const handleSubmitAnswer = () => {
     if (selectedOptionIndex === null || !currentExercise) {
@@ -111,11 +122,11 @@ export default function Exercises() {
     setIsCorrect(false);
 
     // Find next incomplete exercise
-    const nextIndex = dailyExercises?.findIndex((ex: any, index: number) => 
+    const nextIndex = exercisesArray?.findIndex((ex: any, index: number) => 
       index > currentExerciseIndex && !ex.completedAt
     );
 
-    if (nextIndex !== -1) {
+    if (nextIndex !== undefined && nextIndex !== -1) {
       setCurrentExerciseIndex(nextIndex);
     } else {
       // All exercises completed
@@ -143,7 +154,7 @@ export default function Exercises() {
               <div className="text-right">
                 <p className="text-sm text-neutral-500">Progresso de Hoje</p>
                 <p className="font-semibold text-neutral-800">
-                  {completedExercises.length}/{dailyExercises?.length || 0}
+                  {completedExercises.length}/{exercisesArray?.length || 0}
                 </p>
               </div>
               <CircularProgress 
@@ -172,7 +183,7 @@ export default function Exercises() {
                 <p className="text-neutral-600">Preparando seus exercícios...</p>
               </CardContent>
             </Card>
-          ) : !dailyExercises || dailyExercises.length === 0 ? (
+          ) : !exercisesArray || exercisesArray.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <div className="max-w-md mx-auto">
@@ -194,7 +205,7 @@ export default function Exercises() {
                 </div>
               </CardContent>
             </Card>
-          ) : completedExercises.length === dailyExercises.length ? (
+          ) : completedExercises.length === exercisesArray.length ? (
             <Card className="bg-green-50 border-green-200">
               <CardContent className="py-12 text-center">
                 <div className="max-w-md mx-auto">
@@ -205,7 +216,7 @@ export default function Exercises() {
                     Parabéns! Exercícios Concluídos! 🎉
                   </h3>
                   <p className="text-green-700 mb-4">
-                    Você completou todos os {dailyExercises.length} exercícios de hoje. 
+                    Você completou todos os {exercisesArray.length} exercícios de hoje. 
                     Seu mindset está sendo fortalecido a cada dia!
                   </p>
                   <div className="bg-white p-4 rounded-lg border border-green-200">
@@ -236,7 +247,7 @@ export default function Exercises() {
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center">
                       <Brain className="w-5 h-5 mr-2 text-primary" />
-                      Exercício {currentExerciseIndex + 1} de {dailyExercises.length}
+                      Exercício {currentExerciseIndex + 1} de {exercisesArray?.length || 0}
                     </span>
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
                       {currentExercise?.exercise?.category || 'Mindset'}
@@ -258,7 +269,7 @@ export default function Exercises() {
                               key={index}
                               variant={selectedOptionIndex === index ? "default" : "outline"}
                               onClick={() => handleOptionSelect(index)}
-                              disabled={showResult || currentExercise?.completedAt}
+                              disabled={showResult || !!currentExercise?.completedAt}
                               className={`w-full justify-start text-left h-auto py-4 px-6 ${
                                 selectedOptionIndex === index
                                   ? 'bg-primary text-white hover:bg-primary/90'
@@ -342,7 +353,7 @@ export default function Exercises() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
-                    {dailyExercises.map((exercise: any, index: number) => (
+                    {exercisesArray?.map((exercise: any, index: number) => (
                       <Button
                         key={exercise.id}
                         variant={index === currentExerciseIndex ? "default" : "outline"}

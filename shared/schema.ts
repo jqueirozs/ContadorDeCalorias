@@ -141,6 +141,7 @@ export const meals = pgTable("meals", {
   calories: integer("calories"),
   date: date("date").notNull(),
   points: integer("points").default(0),
+  photoUrl: varchar("photo_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

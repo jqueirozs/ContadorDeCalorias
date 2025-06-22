@@ -119,7 +119,7 @@ export default function WeightForm({ isOpen, onClose }: WeightFormProps) {
       notes: notes.trim() || undefined,
       photoUrl,
       date: today,
-    });
+    } as any);
   };
 
   return (

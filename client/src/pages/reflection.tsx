@@ -65,9 +65,9 @@ export default function Reflection() {
   });
 
   const saveReflectionMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Record<string, any>) => {
       if (reflection) {
-        return await apiRequest("PUT", `/api/reflections/${reflection.id}`, data);
+        return await apiRequest("PUT", `/api/reflections/${(reflection as any).id}`, data);
       } else {
         return await apiRequest("POST", "/api/reflections", { ...data, date: today });
       }
@@ -107,29 +107,29 @@ export default function Reflection() {
   useEffect(() => {
     if (reflection) {
       setFormData({
-        moodRating: [reflection.moodRating || 3],
-        hungerLevel: [reflection.hungerLevel || 3],
-        stressLevel: [reflection.stressLevel || 3],
-        exerciseMinutes: reflection.exerciseMinutes || 0,
-        challenges: reflection.challenges || "",
-        achievements: reflection.achievements || "",
-        notes: reflection.notes || "",
-        drankEnoughWater: reflection.drankEnoughWater,
-        ateMindfully: reflection.ateMindfully,
-        exercisedToday: reflection.exercisedToday,
-        sleptWell: reflection.sleptWell,
-        managedStress: reflection.managedStress,
-        avoidedEmotionalEating: reflection.avoidedEmotionalEating,
+        moodRating: [(reflection as any).moodRating || 3],
+        hungerLevel: [(reflection as any).hungerLevel || 3],
+        stressLevel: [(reflection as any).stressLevel || 3],
+        exerciseMinutes: (reflection as any).exerciseMinutes || 0,
+        challenges: (reflection as any).challenges || "",
+        achievements: (reflection as any).achievements || "",
+        notes: (reflection as any).notes || "",
+        drankEnoughWater: (reflection as any).drankEnoughWater,
+        ateMindfully: (reflection as any).ateMindfully,
+        exercisedToday: (reflection as any).exercisedToday,
+        sleptWell: (reflection as any).sleptWell,
+        managedStress: (reflection as any).managedStress,
+        avoidedEmotionalEating: (reflection as any).avoidedEmotionalEating,
         // Daily Balance Questions
-        chooseHealthyMeals: reflection.chooseHealthyMeals,
-        avoidRepeatingPlates: reflection.avoidRepeatingPlates,
-        hadEmotionalImpulses: reflection.hadEmotionalImpulses,
-        hadEnvironmentalImpulses: reflection.hadEnvironmentalImpulses,
-        evacuatedLast24h: reflection.evacuatedLast24h,
-        hadBodySwelling: reflection.hadBodySwelling,
-        avoidedSelfSabotage: reflection.avoidedSelfSabotage,
-        dayRating: reflection.dayRating || 3,
-        totalCalories: reflection.totalCalories || 0,
+        chooseHealthyMeals: (reflection as any).chooseHealthyMeals,
+        avoidRepeatingPlates: (reflection as any).avoidRepeatingPlates,
+        hadEmotionalImpulses: (reflection as any).hadEmotionalImpulses,
+        hadEnvironmentalImpulses: (reflection as any).hadEnvironmentalImpulses,
+        evacuatedLast24h: (reflection as any).evacuatedLast24h,
+        hadBodySwelling: (reflection as any).hadBodySwelling,
+        avoidedSelfSabotage: (reflection as any).avoidedSelfSabotage,
+        dayRating: (reflection as any).dayRating || 3,
+        totalCalories: (reflection as any).totalCalories || 0,
       });
     }
   }, [reflection]);
@@ -179,12 +179,12 @@ export default function Reflection() {
               <p className="text-neutral-600 mt-1">Reflita sobre seu dia e identifique padrões</p>
             </div>
             <div className="flex items-center space-x-4">
-              {reflection && (
+              {reflection ? (
                 <div className="flex items-center text-green-600">
                   <CheckCircle className="w-5 h-5 mr-1" />
                   <span className="text-sm font-medium">Preenchido</span>
                 </div>
-              )}
+              ) : null}
               <div className="text-right">
                 <p className="text-sm text-neutral-500">Data</p>
                 <p className="font-semibold text-neutral-800">
@@ -379,7 +379,7 @@ export default function Reflection() {
                       <div className="flex items-center justify-between gap-4">
                         <ToggleButton
                           value={formData.chooseHealthyMeals}
-                          onChange={(value) => setFormData({ ...formData, chooseHealthyMeals: value })}
+                          onChange={(value) => setFormData({ ...formData, chooseHealthyMeals: value as any })}
                         />
                         <p className="text-sm text-neutral-700 flex-1">
                           Selecionei, de modo saudável, minhas refeições
@@ -388,7 +388,7 @@ export default function Reflection() {
                       <div className="flex items-center justify-between gap-4">
                         <ToggleButton
                           value={formData.avoidRepeatingPlates}
-                          onChange={(value) => setFormData({ ...formData, avoidRepeatingPlates: value })}
+                          onChange={(value) => setFormData({ ...formData, avoidRepeatingPlates: value as any })}
                         />
                         <p className="text-sm text-neutral-700 flex-1">
                           Evitei repetir pratos e balanceei o volume de comida em cada refeição
@@ -406,7 +406,7 @@ export default function Reflection() {
                       <div className="flex items-center justify-between gap-4">
                         <ToggleButton
                           value={formData.evacuatedLast24h}
-                          onChange={(value) => setFormData({ ...formData, evacuatedLast24h: value })}
+                          onChange={(value) => setFormData({ ...formData, evacuatedLast24h: value as any })}
                         />
                         <p className="text-sm text-neutral-700 flex-1">
                           Evacuei nas últimas 24 horas
@@ -415,7 +415,7 @@ export default function Reflection() {
                       <div className="flex items-center justify-between gap-4">
                         <ToggleButton
                           value={formData.hadBodySwelling}
-                          onChange={(value) => setFormData({ ...formData, hadBodySwelling: value })}
+                          onChange={(value) => setFormData({ ...formData, hadBodySwelling: value as any })}
                         />
                         <p className="text-sm text-neutral-700 flex-1">
                           Tive inchaço em alguma região do meu corpo
@@ -433,7 +433,7 @@ export default function Reflection() {
                       <div className="flex items-center justify-between gap-4">
                         <ToggleButton
                           value={formData.hadEmotionalImpulses}
-                          onChange={(value) => setFormData({ ...formData, hadEmotionalImpulses: value })}
+                          onChange={(value) => setFormData({ ...formData, hadEmotionalImpulses: value as any })}
                         />
                         <p className="text-sm text-neutral-700 flex-1">
                           Impulsos <strong>emocionais</strong> e <strong>internos</strong> prejudicaram a minha alimentação
@@ -442,7 +442,7 @@ export default function Reflection() {
                       <div className="flex items-center justify-between gap-4">
                         <ToggleButton
                           value={formData.hadEnvironmentalImpulses}
-                          onChange={(value) => setFormData({ ...formData, hadEnvironmentalImpulses: value })}
+                          onChange={(value) => setFormData({ ...formData, hadEnvironmentalImpulses: value as any })}
                         />
                         <p className="text-sm text-neutral-700 flex-1">
                           Impulsos <strong>ambientais</strong> e <strong>externos</strong> prejudicaram a minha alimentação
@@ -460,7 +460,7 @@ export default function Reflection() {
                       <div className="flex items-center justify-between gap-4">
                         <ToggleButton
                           value={formData.avoidedSelfSabotage}
-                          onChange={(value) => setFormData({ ...formData, avoidedSelfSabotage: value })}
+                          onChange={(value) => setFormData({ ...formData, avoidedSelfSabotage: value as any })}
                         />
                         <p className="text-sm text-neutral-700 flex-1">
                           Evitei atitudes de autossabotagem

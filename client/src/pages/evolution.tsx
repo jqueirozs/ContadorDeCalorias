@@ -50,14 +50,14 @@ export default function Evolution() {
   }
 
   // Transform weight data for chart
-  const weightChartData = weightEntries?.map((entry: any) => ({
+  const weightChartData = (weightEntries as Array<{ id: number; weight: string; date: string; notes?: string }> | undefined)?.map((entry: { id: number; weight: string; date: string; notes?: string }) => ({
     date: new Date(entry.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
     weight: parseFloat(entry.weight),
     fullDate: entry.date,
   })).reverse() || [];
 
   // Transform points data for chart
-  const pointsChartData = pointsHistory?.reduce((acc: any[], point: any) => {
+  const pointsChartData = (pointsHistory as Array<{ date: string; points: number }> | undefined)?.reduce((acc: Array<{ date: string; points: number; fullDate: string }>, point: { date: string; points: number }) => {
     const date = new Date(point.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
     const existing = acc.find(item => item.date === date);
     
@@ -75,15 +75,18 @@ export default function Evolution() {
   }, []).reverse() || [];
 
   // Calculate statistics
+  const weightArray = weightEntries as Array<{ weight: string }> | undefined;
+  const pointsArray = pointsHistory as Array<{ points: number }> | undefined;
+  
   const weightStats = {
-    current: weightEntries?.[0] ? parseFloat(weightEntries[0].weight) : null,
-    previous: weightEntries?.[1] ? parseFloat(weightEntries[1].weight) : null,
-    totalChange: weightEntries?.length >= 2 
-      ? parseFloat(weightEntries[0].weight) - parseFloat(weightEntries[weightEntries.length - 1].weight)
+    current: weightArray?.[0] ? parseFloat(weightArray[0].weight) : null,
+    previous: weightArray?.[1] ? parseFloat(weightArray[1].weight) : null,
+    totalChange: weightArray && weightArray.length >= 2 
+      ? parseFloat(weightArray[0].weight) - parseFloat(weightArray[weightArray.length - 1].weight)
       : 0,
   };
 
-  const totalPointsInPeriod = pointsHistory?.reduce((sum: number, p: any) => sum + p.points, 0) || 0;
+  const totalPointsInPeriod = pointsArray?.reduce((sum: number, p: { points: number }) => sum + p.points, 0) || 0;
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -155,14 +158,14 @@ export default function Evolution() {
 
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-accent">{weightEntries?.length || 0}</div>
+                <div className="text-2xl font-bold text-accent">{(weightEntries as Array<any> | undefined)?.length || 0}</div>
                 <div className="text-sm text-neutral-600">Registros de Peso</div>
               </CardContent>
             </Card>
 
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-purple-600">{pointsHistory?.length || 0}</div>
+                <div className="text-2xl font-bold text-purple-600">{(pointsHistory as Array<any> | undefined)?.length || 0}</div>
                 <div className="text-sm text-neutral-600">Atividades Realizadas</div>
               </CardContent>
             </Card>
@@ -270,15 +273,15 @@ export default function Evolution() {
                   {/* Summary */}
                   <div>
                     <h4 className="font-semibold text-neutral-800 mb-2">Resumo do Progresso</h4>
-                    <p className="text-neutral-700 leading-relaxed">{insights?.summary}</p>
+                    <p className="text-neutral-700 leading-relaxed">{(insights as any)?.summary}</p>
                   </div>
 
                   {/* Patterns */}
-                  {insights?.patterns && insights.patterns.length > 0 && (
+                  {(insights as any)?.patterns && (insights as any).patterns.length > 0 && (
                     <div>
                       <h4 className="font-semibold text-neutral-800 mb-2">Padrões Identificados</h4>
                       <ul className="space-y-2">
-                        {insights.patterns.map((pattern: string, index: number) => (
+                        {(insights as any).patterns.map((pattern: string, index: number) => (
                           <li key={index} className="flex items-start">
                             <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                             <span className="text-neutral-700">{pattern}</span>
@@ -289,11 +292,11 @@ export default function Evolution() {
                   )}
 
                   {/* Suggestions */}
-                  {insights?.suggestions && insights.suggestions.length > 0 && (
+                  {(insights as any)?.suggestions && (insights as any).suggestions.length > 0 && (
                     <div>
                       <h4 className="font-semibold text-neutral-800 mb-2">Sugestões para Melhorar</h4>
                       <ul className="space-y-2">
-                        {insights.suggestions.map((suggestion: string, index: number) => (
+                        {(insights as any).suggestions.map((suggestion: string, index: number) => (
                           <li key={index} className="flex items-start">
                             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                             <span className="text-neutral-700">{suggestion}</span>
@@ -304,11 +307,11 @@ export default function Evolution() {
                   )}
 
                   {/* Alerts */}
-                  {insights?.alerts && insights.alerts.length > 0 && (
+                  {(insights as any)?.alerts && (insights as any).alerts.length > 0 && (
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                       <h4 className="font-semibold text-yellow-800 mb-2">Pontos de Atenção</h4>
                       <ul className="space-y-2">
-                        {insights.alerts.map((alert: string, index: number) => (
+                        {(insights as any).alerts.map((alert: string, index: number) => (
                           <li key={index} className="flex items-start">
                             <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                             <span className="text-yellow-800">{alert}</span>
@@ -336,14 +339,14 @@ export default function Evolution() {
                   <div className="flex justify-between">
                     <span className="text-sm text-neutral-600">Exercícios concluídos:</span>
                     <span className="font-medium">
-                      {pointsHistory?.filter((p: any) => p.activity.includes('Exercício')).length || 0}
+                      {(pointsHistory as Array<{ activity: string }> | undefined)?.filter((p: { activity: string }) => p.activity.includes('Exercício')).length || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-neutral-600">Pontos ganhos:</span>
                     <span className="font-medium text-primary">
-                      +{pointsHistory?.filter((p: any) => p.activity.includes('Exercício'))
-                        .reduce((sum: number, p: any) => sum + p.points, 0) || 0}
+                      +{(pointsHistory as Array<{ activity: string; points: number }> | undefined)?.filter((p: { activity: string }) => p.activity.includes('Exercício'))
+                        .reduce((sum: number, p: { points: number }) => sum + p.points, 0) || 0}
                     </span>
                   </div>
                 </div>
@@ -362,14 +365,14 @@ export default function Evolution() {
                   <div className="flex justify-between">
                     <span className="text-sm text-neutral-600">Refeições registradas:</span>
                     <span className="font-medium">
-                      {pointsHistory?.filter((p: any) => p.activity.includes('Refeição')).length || 0}
+                      {(pointsHistory as Array<{ activity: string }> | undefined)?.filter((p: { activity: string }) => p.activity.includes('Refeição')).length || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-neutral-600">Pontos ganhos:</span>
                     <span className="font-medium text-secondary">
-                      +{pointsHistory?.filter((p: any) => p.activity.includes('Refeição'))
-                        .reduce((sum: number, p: any) => sum + p.points, 0) || 0}
+                      +{(pointsHistory as Array<{ activity: string; points: number }> | undefined)?.filter((p: { activity: string }) => p.activity.includes('Refeição'))
+                        .reduce((sum: number, p: { points: number }) => sum + p.points, 0) || 0}
                     </span>
                   </div>
                 </div>
@@ -388,14 +391,14 @@ export default function Evolution() {
                   <div className="flex justify-between">
                     <span className="text-sm text-neutral-600">Espelhos preenchidos:</span>
                     <span className="font-medium">
-                      {pointsHistory?.filter((p: any) => p.activity.includes('Espelho')).length || 0}
+                      {(pointsHistory as Array<{ activity: string }> | undefined)?.filter((p: { activity: string }) => p.activity.includes('Espelho')).length || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-neutral-600">Pontos ganhos:</span>
                     <span className="font-medium text-accent">
-                      +{pointsHistory?.filter((p: any) => p.activity.includes('Espelho'))
-                        .reduce((sum: number, p: any) => sum + p.points, 0) || 0}
+                      +{(pointsHistory as Array<{ activity: string; points: number }> | undefined)?.filter((p: { activity: string }) => p.activity.includes('Espelho'))
+                        .reduce((sum: number, p: { points: number }) => sum + p.points, 0) || 0}
                     </span>
                   </div>
                 </div>

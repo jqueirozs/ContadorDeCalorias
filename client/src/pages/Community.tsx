@@ -229,7 +229,7 @@ export default function Community() {
 
             {/* Replies */}
             <div className="space-y-4">
-              {replies?.map((reply: any) => (
+              {(replies as Array<{ id: number; user: { profileImageUrl?: string; firstName?: string }; content: string; createdAt: string; likes: number }> | undefined)?.map((reply: { id: number; user: { profileImageUrl?: string; firstName?: string }; content: string; createdAt: string; likes: number }) => (
                 <Card key={reply.id}>
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
@@ -383,7 +383,7 @@ export default function Community() {
       {/* Community Content */}
       <main className="p-6">
         <div className="max-w-4xl mx-auto space-y-4">
-          {topics?.map((topic: any) => (
+          {(topics as Array<any> | undefined)?.map((topic: any) => (
             <Card 
               key={topic.id} 
               className="hover:shadow-md transition-shadow cursor-pointer"
@@ -445,7 +445,7 @@ export default function Community() {
             </Card>
           ))}
 
-          {(!topics || topics.length === 0) && (
+          {(!topics || (topics as Array<any>).length === 0) && (
             <Card>
               <CardContent className="p-12 text-center">
                 <MessageCircle size={48} className="mx-auto text-neutral-400 mb-4" />

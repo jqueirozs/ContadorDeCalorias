@@ -409,25 +409,19 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
                 </div>
               </div>
 
-              <PhotoUpload
-                onPhotoAnalyzed={handlePhotoAnalyzed}
-                onAnalyzing={handlePhotoAnalyzing}
-                disabled={createMealMutation.isPending || isPhotoAnalyzing}
-              >
-                <Button disabled={createMealMutation.isPending || isPhotoAnalyzing}>
-                  {isPhotoAnalyzing ? (
-                    <>
-                      <Search className="w-4 h-4 mr-2 animate-spin stroke-[1.5]" />
-                      Analisando...
-                    </>
-                  ) : (
-                    <>
-                      <Camera className="w-4 h-4 mr-2 stroke-[1.5]" />
-                      Tirar Foto
-                    </>
-                  )}
-                </Button>
-              </PhotoUpload>
+              <Button disabled={createMealMutation.isPending || isPhotoAnalyzing}>
+                {isPhotoAnalyzing ? (
+                  <>
+                    <Search className="w-4 h-4 mr-2 animate-spin stroke-[1.5]" />
+                    Analisando...
+                  </>
+                ) : (
+                  <>
+                    <Camera className="w-4 h-4 mr-2 stroke-[1.5]" />
+                    Analisar Foto
+                  </>
+                )}
+              </Button>
 
               {photoAnalysis && (
                 <div className="space-y-4">
@@ -474,25 +468,19 @@ export default function MealForm({ isOpen, onClose, selectedDate, editingMeal }:
                 </div>
               </div>
 
-              <VoiceInput
-                onTranscript={handleVoiceTranscript}
-                placeholder="Clique no microfone e descreva sua refeição"
+              <Button
+                variant="secondary"
+                className="w-full h-10 rounded-md p-2 flex items-center justify-center"
                 disabled={createMealMutation.isPending}
+                onClick={() => setIsListening(!isListening)}
               >
-                <Button
-                  variant="secondary"
-                  className="w-full h-10 rounded-md p-2 flex items-center justify-center"
-                  disabled={createMealMutation.isPending}
-                  onClick={() => setIsListening(!isListening)}
-                >
-                  {isListening ? (
-                    <MicOff className="w-4 h-4 mr-2 stroke-[1.5]" />
-                  ) : (
-                    <Mic className="w-4 h-4 mr-2 stroke-[1.5]" />
-                  )}
-                  {isListening ? "Gravando..." : "Gravar Refeição"}
-                </Button>
-              </VoiceInput>
+                {isListening ? (
+                  <Mic className="w-4 h-4 mr-2 stroke-[1.5]" />
+                ) : (
+                  <Mic className="w-4 h-4 mr-2 stroke-[1.5]" />
+                )}
+                {isListening ? "Gravando..." : "Gravar Refeição"}
+              </Button>
 
               {(mealType || time || foods) && (
                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg">

@@ -72,16 +72,14 @@ export function Sidebar() {
       <div className="p-4 border-t border-neutral-200">
         <div className="flex items-center space-x-3">
           <img 
-            src={user?.profileImageUrl || "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face"}
+            src={(user as any)?.profileImageUrl || "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face"}
             alt="Profile" 
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="flex-1">
-            <p className="font-medium text-neutral-800">
-              {user?.firstName || "Usuário"}
-            </p>
+            <p className="font-medium text-neutral-800">{(user as any)?.firstName || "Usuário"}</p>
             <p className="text-sm text-neutral-500">
-              Membro desde {user?.memberSince ? new Date(user.memberSince).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }) : 'Recente'}
+              Membro desde {(user as any)?.memberSince ? new Date((user as any).memberSince).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }) : 'Recente'}
             </p>
           </div>
           <Button variant="ghost" size="sm">

@@ -293,7 +293,7 @@ export class DatabaseStorage implements IStorage {
       .slice(0, Math.min(10, allExercises.length));
 
     // Create daily exercises
-    const dailyExerciseValues = randomExercises.map(exercise => ({
+    const dailyExerciseValues = randomExercises.map((exercise: Exercise) => ({
       userId,
       exerciseId: exercise.id,
       date,
@@ -403,7 +403,8 @@ export class DatabaseStorage implements IStorage {
     const points = pointsMap[meal.type] || 10;
 
     // Additional points for photo analysis
-    const photoBonus = meal.photoUrl ? 5 : 0;
+    const mealWithPhoto = meal as InsertMeal & { photoUrl?: string };
+    const photoBonus = mealWithPhoto.photoUrl ? 5 : 0;
     const totalPoints = points + photoBonus;
 
     const [newMeal] = await this.db
@@ -412,7 +413,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
 
     // Award points for registering meal
-    const pointsDescription = meal.photoUrl 
+    const pointsDescription = mealWithPhoto.photoUrl 
       ? `Refeição registrada com foto: ${meal.type}`
       : `Refeição registrada: ${meal.type}`;
 
