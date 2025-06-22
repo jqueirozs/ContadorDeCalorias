@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Heart, BarChart3, Play, Users, Brain, FlipHorizontal2, Utensils, TrendingUp, LogOut, Menu, X, Calculator } from "lucide-react";
 import { useState } from "react";
 
-import Emagrecimento_Inteligente__1_ from "@assets/Emagrecimento Inteligente (1).png";
-
 export default function Sidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
@@ -37,6 +35,7 @@ export default function Sidebar() {
       >
         {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
+
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -44,6 +43,7 @@ export default function Sidebar() {
           onClick={closeMobileMenu}
         />
       )}
+
       {/* Sidebar */}
       <div className={`w-64 bg-white shadow-lg flex flex-col min-h-screen z-40 transform transition-transform duration-300 ease-in-out ${
         isMobileMenuOpen ? 'translate-x-0 fixed h-screen' : '-translate-x-full fixed h-screen'
@@ -52,7 +52,7 @@ export default function Sidebar() {
         <div className="p-6 border-b border-neutral-200">
           <div className="flex items-center justify-center">
             <img 
-              src={Emagrecimento_Inteligente__1_} 
+              src="/attached_assets/logo%20ei%20dr%20jorge%20sampaio_1750552978614.jpg" 
               alt="Emagrecimento Inteligente" 
               className="h-16 w-auto object-contain"
             />

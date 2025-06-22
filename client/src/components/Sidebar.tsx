@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-function Sidebar() {
+export function Sidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
 
@@ -92,5 +92,3 @@ function Sidebar() {
     </div>
   );
 }
-
-export default Sidebar;

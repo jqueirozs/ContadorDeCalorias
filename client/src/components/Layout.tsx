@@ -1,13 +1,10 @@
-import React from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "./layout/sidebar";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+export function Layout({ children }: LayoutProps) {
   return (
     <div className="flex h-screen bg-neutral-50">
       <Sidebar />
@@ -19,5 +16,3 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     </div>
   );
 }
-
-export default Layout;

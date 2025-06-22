@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import MealForm from "@/components/meals/MealForm";
+import MealForm from "@/components/meals/meal-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Plus, Search, Utensils, Camera } from "lucide-react";
-import { NutrientDisplay } from "@/components/ui/nutrient-display";
+import NutrientDisplay from "@/components/ui/nutrient-display";
 
 export default function Meals() {
   const { toast } = useToast();

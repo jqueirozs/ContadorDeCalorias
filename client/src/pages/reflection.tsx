@@ -10,8 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { FlipHorizontal2, Save, CheckCircle, Star } from "lucide-react";
+import { FlipHorizontal2, Save, CheckCircle } from "lucide-react";
 
 export default function Reflection() {
   const { toast } = useToast();
@@ -32,15 +31,6 @@ export default function Reflection() {
     sleptWell: null,
     managedStress: null,
     avoidedEmotionalEating: null,
-    // Novas perguntas do balanço diário
-    selectedHealthyMeals: false,
-    avoidedRepeatingDishes: false,
-    hadEmotionalImpulses: false,
-    hadEnvironmentalImpulses: false,
-    evacuatedLast24h: false,
-    hadBodySwelling: false,
-    avoidedSelfSabotage: false,
-    dayRating: 0,
   });
 
   useEffect(() => {
@@ -118,14 +108,6 @@ export default function Reflection() {
         sleptWell: reflection.sleptWell,
         managedStress: reflection.managedStress,
         avoidedEmotionalEating: reflection.avoidedEmotionalEating,
-        selectedHealthyMeals: reflection.selectedHealthyMeals || false,
-        avoidedRepeatingDishes: reflection.avoidedRepeatingDishes || false,
-        hadEmotionalImpulses: reflection.hadEmotionalImpulses || false,
-        hadEnvironmentalImpulses: reflection.hadEnvironmentalImpulses || false,
-        evacuatedLast24h: reflection.evacuatedLast24h || false,
-        hadBodySwelling: reflection.hadBodySwelling || false,
-        avoidedSelfSabotage: reflection.avoidedSelfSabotage || false,
-        dayRating: reflection.dayRating || 0,
       });
     }
   }, [reflection]);
@@ -145,14 +127,6 @@ export default function Reflection() {
       challenges: formData.challenges,
       achievements: formData.achievements,
       notes: formData.notes,
-      selectedHealthyMeals: formData.selectedHealthyMeals,
-      avoidedRepeatingDishes: formData.avoidedRepeatingDishes,
-      hadEmotionalImpulses: formData.hadEmotionalImpulses,
-      hadEnvironmentalImpulses: formData.hadEnvironmentalImpulses,
-      evacuatedLast24h: formData.evacuatedLast24h,
-      hadBodySwelling: formData.hadBodySwelling,
-      avoidedSelfSabotage: formData.avoidedSelfSabotage,
-      dayRating: formData.dayRating,
     });
   };
 
@@ -326,143 +300,6 @@ export default function Reflection() {
                   </CardContent>
                 </Card>
               </div>
-
-              {/* Balanço Diário */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-semibold">Balanço Diário</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Alimentação Normal */}
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-700 mb-4 bg-gray-100 px-3 py-2 rounded">ALIMENTAÇÃO NORMAL</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="healthy-meals" className="text-sm font-medium">
-                          Selecionei, de modo saudável, minhas refeições
-                        </Label>
-                        <Switch
-                          id="healthy-meals"
-                          checked={formData.selectedHealthyMeals}
-                          onCheckedChange={(checked) => setFormData({ ...formData, selectedHealthyMeals: checked })}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="avoided-repeating" className="text-sm font-medium">
-                          Evitei repetir pratos e balanceei o volume de comida em cada refeição
-                        </Label>
-                        <Switch
-                          id="avoided-repeating"
-                          checked={formData.avoidedRepeatingDishes}
-                          onCheckedChange={(checked) => setFormData({ ...formData, avoidedRepeatingDishes: checked })}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Alimentação Impulsiva */}
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-700 mb-4 bg-gray-100 px-3 py-2 rounded">ALIMENTAÇÃO IMPULSIVA</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="emotional-impulses" className="text-sm font-medium">
-                          Impulsos <span className="underline">emocionais</span> e <span className="underline">internos</span> prejudicaram a minha alimentação
-                        </Label>
-                        <Switch
-                          id="emotional-impulses"
-                          checked={formData.hadEmotionalImpulses}
-                          onCheckedChange={(checked) => setFormData({ ...formData, hadEmotionalImpulses: checked })}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="environmental-impulses" className="text-sm font-medium">
-                          Impulsos <span className="underline">ambientais</span> e <span className="underline">externos</span> prejudicaram a minha alimentação
-                        </Label>
-                        <Switch
-                          id="environmental-impulses"
-                          checked={formData.hadEnvironmentalImpulses}
-                          onCheckedChange={(checked) => setFormData({ ...formData, hadEnvironmentalImpulses: checked })}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Metabolismo e Autocontrole */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-700 mb-4 bg-gray-100 px-3 py-2 rounded">METABOLISMO</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="evacuated" className="text-sm font-medium">
-                            Evacuei nas últimas 24 horas
-                          </Label>
-                          <Switch
-                            id="evacuated"
-                            checked={formData.evacuatedLast24h}
-                            onCheckedChange={(checked) => setFormData({ ...formData, evacuatedLast24h: checked })}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="swelling" className="text-sm font-medium">
-                            Tive inchaço em alguma região do meu corpo
-                          </Label>
-                          <Switch
-                            id="swelling"
-                            checked={formData.hadBodySwelling}
-                            onCheckedChange={(checked) => setFormData({ ...formData, hadBodySwelling: checked })}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-700 mb-4 bg-gray-100 px-3 py-2 rounded">AUTOCONTROLE</h3>
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="self-sabotage" className="text-sm font-medium">
-                          Evitei atitudes de autosabotagem
-                        </Label>
-                        <Switch
-                          id="self-sabotage"
-                          checked={formData.avoidedSelfSabotage}
-                          onCheckedChange={(checked) => setFormData({ ...formData, avoidedSelfSabotage: checked })}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Avaliação do Dia */}
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-700 mb-4 bg-gray-100 px-3 py-2 rounded">AVALIAÇÃO DO DIA</h3>
-                    <div className="flex items-center justify-center space-x-2">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, dayRating: star })}
-                          className={`p-1 transition-colors ${
-                            star <= formData.dayRating 
-                              ? 'text-yellow-400 hover:text-yellow-500' 
-                              : 'text-gray-300 hover:text-gray-400'
-                          }`}
-                        >
-                          <Star 
-                            className="w-8 h-8" 
-                            fill={star <= formData.dayRating ? 'currentColor' : 'none'}
-                          />
-                        </button>
-                      ))}
-                    </div>
-                    <p className="text-center text-sm text-gray-600 mt-2">
-                      {formData.dayRating === 0 && "Clique nas estrelas para avaliar seu dia"}
-                      {formData.dayRating === 1 && "Dia muito difícil"}
-                      {formData.dayRating === 2 && "Dia difícil"}
-                      {formData.dayRating === 3 && "Dia regular"}
-                      {formData.dayRating === 4 && "Dia bom"}
-                      {formData.dayRating === 5 && "Dia excelente"}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
 
               {/* Additional Notes */}
               <Card>

@@ -13,7 +13,7 @@ interface NutrientDisplayProps {
   className?: string;
 }
 
-export function NutrientDisplay({ nutrients, className }: NutrientDisplayProps) {
+export default function NutrientDisplay({ nutrients, className }: NutrientDisplayProps) {
   if (!nutrients || (!nutrients.calories && !nutrients.protein && !nutrients.carbohydrates && !nutrients.fat)) {
     return null;
   }
@@ -69,5 +69,3 @@ export function NutrientDisplay({ nutrients, className }: NutrientDisplayProps) 
     </Card>
   );
 }
-
-export default NutrientDisplay;
