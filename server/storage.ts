@@ -1,3 +1,5 @@
+import { eq, desc, and, count, sql } from "drizzle-orm";
+import { db } from "./db";
 import {
   users,
   courseModules,
@@ -31,8 +33,6 @@ import {
   type InsertWeightEntry,
   type PointsHistory,
 } from "@shared/schema";
-import { db } from "./db";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -92,7 +92,12 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  db: any;
+  private db: any;
+
+  constructor(database = db) {
+    this.db = database;
+  }
+
   // User operations (IMPORTANT: mandatory for Replit Auth)
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await this.db.select().from(users).where(eq(users.id, id));
