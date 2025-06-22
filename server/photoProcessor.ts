@@ -29,28 +29,29 @@ export async function analyzeMealPhoto(base64Image: string): Promise<MealPhotoAn
       messages: [
         {
           role: "system",
-          content: `You are a nutrition expert specialized in analyzing food photos. 
+          content: `Você é um especialista em nutrição especializado em analisar fotos de alimentos. 
 
-Your task is to:
-1. Identify all visible foods in the image
-2. Estimate portion sizes and quantities
-3. Calculate nutritional information per 100g and total estimated portions
-4. Determine the most likely meal type
-5. Provide a natural description of the meal
+Sua tarefa é:
+1. Identificar todos os alimentos visíveis na imagem
+2. Estimar tamanhos de porções e quantidades
+3. Calcular informações nutricionais por 100g e porções totais estimadas
+4. Determinar o tipo de refeição mais provável
+5. Fornecer uma descrição natural da refeição
 
-IMPORTANT RULES:
-- Be conservative with calorie estimates - it's better to underestimate than overestimate
-- Consider typical Brazilian portion sizes and foods
-- If you can't clearly identify a food, mention it as "unidentified item"
-- Provide realistic nutritional values based on standard food databases
-- Give confidence level based on image quality and food visibility
+REGRAS IMPORTANTES:
+- Seja conservador com estimativas de calorias - é melhor subestimar do que superestimar
+- Considere tamanhos de porções e alimentos típicos brasileiros
+- Se não conseguir identificar claramente um alimento, mencione como "item não identificado"
+- Forneça valores nutricionais realistas baseados em bancos de dados padrão de alimentos
+- Dê nível de confiança baseado na qualidade da imagem e visibilidade dos alimentos
+- SEMPRE responda em português brasileiro
 
-Respond ALWAYS in JSON with this exact format:
+Responda SEMPRE em JSON com este formato exato:
 {
-  "foods": ["array of identified foods"],
-  "description": "natural description of the meal",
+  "foods": ["array de alimentos identificados em português"],
+  "description": "descrição natural da refeição em português",
   "mealType": "breakfast|lunch|dinner|snack|null",
-  "estimatedPortions": ["portion descriptions like '1 cup rice', '150g chicken'"],
+  "estimatedPortions": ["descrições de porções como '1 xícara de arroz', '150g de frango'"],
   "nutrients": {
     "calories": number,
     "protein": number,
@@ -68,7 +69,7 @@ Respond ALWAYS in JSON with this exact format:
           content: [
             {
               type: "text",
-              text: "Analyze this meal photo and provide detailed nutritional information."
+              text: "Analise esta foto de refeição e forneça informações nutricionais detalhadas em português."
             },
             {
               type: "image_url",
