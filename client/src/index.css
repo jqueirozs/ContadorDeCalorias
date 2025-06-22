@@ -39,26 +39,31 @@
 }
 
 .dark {
-  --background: hsl(240, 10%, 3.9%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(240, 3.7%, 15.9%);
+  --background: #121212;
+  --foreground: #ffffff;
+  --muted: #1e1e1e;
   --muted-foreground: hsl(240, 5%, 74.9%);
-  --popover: hsl(240, 10%, 3.9%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 3.9%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 3.7%, 15.9%);
-  --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(207, 90%, 54%);
+  --popover: #1e1e1e;
+  --popover-foreground: #ffffff;
+  --card: #1e1e1e;
+  --card-foreground: #ffffff;
+  --border: #2a2a2a;
+  --input: #2a2a2a;
+  --primary: hsl(207, 90%, 60%);
   --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(142, 76%, 36%);
+  --secondary: hsl(142, 76%, 44%);
   --secondary-foreground: hsl(142, 100%, 99%);
-  --accent: hsl(240, 3.7%, 15.9%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(33, 100%, 60%);
+  --accent-foreground: hsl(33, 100%, 10%);
+  --destructive: hsl(0, 62.8%, 40%);
+  --destructive-foreground: #ffffff;
   --ring: hsl(240, 4.9%, 83.9%);
   --radius: 0.5rem;
+  --chart-1: hsl(207, 90%, 60%);
+  --chart-2: hsl(142, 76%, 44%);
+  --chart-3: hsl(33, 100%, 58%);
+  --chart-4: hsl(271, 91%, 75%);
+  --chart-5: hsl(0, 84.2%, 65%);
 }
 
 @layer base {
@@ -69,7 +74,7 @@
   body {
     @apply font-sans antialiased text-foreground;
     font-family: 'Inter', sans-serif;
-    background-color: #FAFAFA;
+    background-color: var(--background);
   }
 
   /* Typography improvements */
