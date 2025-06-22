@@ -50,14 +50,12 @@ export default function Sidebar() {
       } lg:h-auto lg:translate-x-0 lg:relative lg:transform-none`}>
         {/* Logo Section */}
         <div className="p-6 border-b border-neutral-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
-              <Heart className="text-white text-lg" />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold text-neutral-800">Emagrecimento</h1>
-              <p className="text-sm text-neutral-500">Inteligente</p>
-            </div>
+          <div className="flex items-center justify-center">
+            <img 
+              src="/attached_assets/logo ei dr jorge sampaio_1750552978614.jpg" 
+              alt="Emagrecimento Inteligente" 
+              className="h-16 w-auto object-contain"
+            />
           </div>
         </div>
 
