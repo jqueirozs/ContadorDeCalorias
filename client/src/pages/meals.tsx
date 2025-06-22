@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Plus, Search, Utensils, Camera, Edit } from "lucide-react";
 import NutrientDisplay from "@/components/ui/nutrient-display";
+import { CircularProgress } from "@/components/ui/circular-progress";
+import { Progress } from "@/components/ui/progress";
 
 export default function Meals() {
   const { toast } = useToast();
@@ -128,9 +130,23 @@ export default function Meals() {
           {!searchTerm && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card>
-                <CardContent className="p-6 text-center">
-                  <div className="text-2xl font-bold text-primary">{todayMeals.length}</div>
-                  <div className="text-sm text-neutral-600">Refeições Registradas</div>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-center flex-1">
+                      <div className="text-2xl font-bold text-primary">{todayMeals.length}/5</div>
+                      <div className="text-sm text-neutral-600">Refeições Registradas</div>
+                    </div>
+                    <CircularProgress 
+                      value={(todayMeals.length / 5) * 100} 
+                      size={50}
+                      color="hsl(var(--primary))"
+                      className="text-primary"
+                    />
+                  </div>
+                  <Progress 
+                    value={(todayMeals.length / 5) * 100} 
+                    className="h-2"
+                  />
                 </CardContent>
               </Card>
               
@@ -138,15 +154,32 @@ export default function Meals() {
                 <CardContent className="p-6 text-center">
                   <div className="text-2xl font-bold text-secondary">+{totalPointsToday}</div>
                   <div className="text-sm text-neutral-600">Pontos Ganhos</div>
+                  <div className="mt-3">
+                    <Progress 
+                      value={Math.min((totalPointsToday / 100) * 100, 100)} 
+                      className="h-2"
+                    />
+                  </div>
                 </CardContent>
               </Card>
               
               <Card>
-                <CardContent className="p-6 text-center">
-                  <div className="text-2xl font-bold text-accent">
-                    {Math.round((todayMeals.length / 5) * 100)}%
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-center flex-1">
+                      <div className="text-2xl font-bold text-accent">
+                        {Math.round((todayMeals.length / 5) * 100)}%
+                      </div>
+                      <div className="text-sm text-neutral-600">Meta Diária</div>
+                    </div>
+                    <CircularProgress 
+                      value={(todayMeals.length / 5) * 100} 
+                      size={50}
+                      showPercentage={true}
+                      color="hsl(var(--accent))"
+                      className="text-accent"
+                    />
                   </div>
-                  <div className="text-sm text-neutral-600">Meta Diária</div>
                 </CardContent>
               </Card>
             </div>

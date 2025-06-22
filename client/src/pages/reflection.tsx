@@ -178,7 +178,7 @@ export default function Reflection() {
               <h2 className="text-2xl font-semibold text-neutral-800">Espelho do Comportamento</h2>
               <p className="text-neutral-600 mt-1">Reflita sobre seu dia e identifique padrões</p>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-4">
               {reflection && (
                 <div className="flex items-center text-green-600">
                   <CheckCircle className="w-5 h-5 mr-1" />
@@ -190,6 +190,23 @@ export default function Reflection() {
                 <p className="font-semibold text-neutral-800">
                   {new Date(today).toLocaleDateString('pt-BR')}
                 </p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="text-right">
+                  <p className="text-xs text-neutral-500">Progresso</p>
+                  <p className="text-sm font-medium text-neutral-800">
+                    {reflection ? "100%" : "0%"}
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-secondary/10">
+                  <div className="w-8 h-8 rounded-full border-2 border-secondary flex items-center justify-center">
+                    {reflection ? (
+                      <CheckCircle className="w-4 h-4 text-secondary" />
+                    ) : (
+                      <div className="w-2 h-2 bg-neutral-300 rounded-full" />
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

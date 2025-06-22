@@ -93,54 +93,72 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className={`flex items-center justify-between p-4 rounded-lg border ${
+                  <div className={`p-4 rounded-lg border ${
                     stats?.reflectionCompleted 
                       ? 'bg-secondary/5 border-secondary/20' 
                       : 'bg-neutral-50 border-neutral-200'
                   }`}>
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        stats?.reflectionCompleted 
-                          ? 'bg-secondary text-white' 
-                          : 'bg-neutral-300 text-neutral-600'
-                      }`}>
-                        {stats?.reflectionCompleted ? (
-                          <CheckCircle className="w-4 h-4" />
-                        ) : (
-                          <Heart className="w-4 h-4" />
-                        )}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          stats?.reflectionCompleted 
+                            ? 'bg-secondary text-white' 
+                            : 'bg-neutral-300 text-neutral-600'
+                        }`}>
+                          {stats?.reflectionCompleted ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Heart className="w-4 h-4" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-neutral-800">Espelho do Comportamento</p>
+                          <p className="text-sm text-neutral-500">
+                            {stats?.reflectionCompleted ? 'Questionário diário concluído' : 'Preencha sua reflexão diária'}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-neutral-800">Espelho do Comportamento</p>
-                        <p className="text-sm text-neutral-500">
-                          {stats?.reflectionCompleted ? 'Questionário diário concluído' : 'Preencha sua reflexão diária'}
-                        </p>
-                      </div>
+                      {stats?.reflectionCompleted ? (
+                        <span className="text-secondary font-medium">+30 pts</span>
+                      ) : (
+                        <Button size="sm" className="bg-secondary hover:bg-secondary/90">
+                          Preencher
+                        </Button>
+                      )}
                     </div>
-                    {stats?.reflectionCompleted ? (
-                      <span className="text-secondary font-medium">+30 pts</span>
-                    ) : (
-                      <Button size="sm" className="bg-secondary hover:bg-secondary/90">
-                        Preencher
-                      </Button>
-                    )}
+                    <div className="w-full bg-neutral-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          stats?.reflectionCompleted ? 'bg-secondary' : 'bg-neutral-300'
+                        }`}
+                        style={{ width: stats?.reflectionCompleted ? '100%' : '0%' }}
+                      ></div>
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg border border-primary/20">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                        <Brain className="w-4 h-4 text-white" />
+                  <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                          <Brain className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-neutral-800">Academia da Mente</p>
+                          <p className="text-sm text-neutral-500">
+                            {stats?.exercisesCompleted || 0} de 10 exercícios concluídos
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-neutral-800">Academia da Mente</p>
-                        <p className="text-sm text-neutral-500">
-                          {stats?.exercisesCompleted || 0} de 10 exercícios concluídos
-                        </p>
-                      </div>
+                      <Button size="sm" className="bg-primary hover:bg-primary/90">
+                        Continuar
+                      </Button>
                     </div>
-                    <Button size="sm" className="bg-primary hover:bg-primary/90">
-                      Continuar
-                    </Button>
+                    <div className="w-full bg-neutral-200 rounded-full h-2">
+                      <div 
+                        className="h-2 bg-primary rounded-full transition-all duration-300"
+                        style={{ width: `${((stats?.exercisesCompleted || 0) / 10) * 100}%` }}
+                      ></div>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg border border-neutral-200">

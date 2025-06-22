@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import { Weight, Star, Brain, Utensils, TrendingDown, Plus, Clock } from "lucide-react";
 
 interface StatsCardsProps {
@@ -89,7 +90,7 @@ export default function StatsCards({ stats, isLoading }: StatsCardsProps) {
       {/* Exercises Today */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-neutral-500 text-sm font-medium">Exercícios Hoje</p>
               <p className="text-2xl font-bold text-neutral-800 mt-1">
@@ -104,13 +105,17 @@ export default function StatsCards({ stats, isLoading }: StatsCardsProps) {
               <Brain className="text-primary text-xl" />
             </div>
           </div>
+          <Progress 
+            value={((stats?.exercisesCompleted || 0) / 10) * 100} 
+            className="h-2"
+          />
         </CardContent>
       </Card>
 
       {/* Meals Today */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-neutral-500 text-sm font-medium">Refeições Hoje</p>
               <p className="text-2xl font-bold text-neutral-800 mt-1">
@@ -125,6 +130,10 @@ export default function StatsCards({ stats, isLoading }: StatsCardsProps) {
               <Utensils className="text-neutral-600 text-xl" />
             </div>
           </div>
+          <Progress 
+            value={((stats?.mealsToday || 0) / 5) * 100} 
+            className="h-2"
+          />
         </CardContent>
       </Card>
     </div>

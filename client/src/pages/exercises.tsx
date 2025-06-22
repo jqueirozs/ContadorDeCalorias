@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import { Progress } from "@/components/ui/progress";
+import { CircularProgress } from "@/components/ui/circular-progress";
 import { Brain, CheckCircle, Star, Target } from "lucide-react";
 
 export default function Exercises() {
@@ -138,11 +139,20 @@ export default function Exercises() {
               <h2 className="text-2xl font-semibold text-neutral-800">Academia da Mente</h2>
               <p className="text-neutral-600 mt-1">Exercícios de autoprogramação para fortalecer seu mindset</p>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-neutral-500">Progresso de Hoje</p>
-              <p className="font-semibold text-neutral-800">
-                {completedExercises.length}/{dailyExercises?.length || 0}
-              </p>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <p className="text-sm text-neutral-500">Progresso de Hoje</p>
+                <p className="font-semibold text-neutral-800">
+                  {completedExercises.length}/{dailyExercises?.length || 0}
+                </p>
+              </div>
+              <CircularProgress 
+                value={progressPercentage} 
+                size={50}
+                showPercentage={true}
+                color="hsl(var(--primary))"
+                className="text-primary"
+              />
             </div>
           </div>
           
