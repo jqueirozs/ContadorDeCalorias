@@ -7,7 +7,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="flex h-screen bg-neutral-50 relative">
+    <div className="flex h-screen bg-background relative">
       <Sidebar />
       <ThemeToggle />
       <div className="flex-1 lg:ml-0 overflow-auto">

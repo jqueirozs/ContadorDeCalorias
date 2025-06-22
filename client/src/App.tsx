@@ -15,6 +15,7 @@ import Meals from "@/pages/meals";
 import Evolution from "@/pages/evolution";
 import Calculadora from "@/pages/calculadora";
 import Sidebar from "@/components/layout/sidebar";
+import ThemeToggle from "@/components/ThemeToggle";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -28,8 +29,9 @@ function Router() {
   }
 
   return (
-    <div className="flex min-h-screen bg-neutral-50">
+    <div className="relative flex min-h-screen bg-background">
       <Sidebar />
+      <ThemeToggle />
       <main className="flex-1 lg:pl-0">
         <Switch>
           <Route path="/" component={Dashboard} />
