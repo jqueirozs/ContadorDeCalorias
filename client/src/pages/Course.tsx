@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Layout } from "@/components/Layout";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,7 +74,7 @@ export default function Course() {
 
   if (isLoading || modulesLoading) {
     return (
-      <Layout>
+      <div className="space-y-6">
         <div className="p-6">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-neutral-200 rounded w-1/3"></div>
@@ -85,7 +85,7 @@ export default function Course() {
             </div>
           </div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
@@ -157,7 +157,7 @@ export default function Course() {
   };
 
   return (
-    <Layout>
+    <div className="space-y-6">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
         <div>
@@ -278,6 +278,6 @@ export default function Course() {
           </CardContent>
         </Card>
       </main>
-    </Layout>
+    </div>
   );
 }

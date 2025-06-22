@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Layout } from "@/components/Layout";
+
 import { StatsCard } from "@/components/StatsCard";
 import { WeightChart } from "@/components/WeightChart";
 import { AddMealModal } from "@/components/AddMealModal";
@@ -91,7 +91,7 @@ export default function Dashboard() {
 
   if (isLoading || statsLoading) {
     return (
-      <Layout>
+      <div className="space-y-6">
         <div className="p-6">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-neutral-200 rounded w-1/3"></div>
@@ -102,7 +102,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
@@ -113,7 +113,7 @@ export default function Dashboard() {
   });
 
   return (
-    <Layout>
+    <div className="space-y-6">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
         <div className="flex items-center justify-between">
@@ -389,6 +389,6 @@ export default function Dashboard() {
       </main>
 
       <AddMealModal open={showMealModal} onOpenChange={setShowMealModal} />
-    </Layout>
+    </div>
   );
 }
