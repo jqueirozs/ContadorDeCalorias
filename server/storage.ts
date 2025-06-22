@@ -315,10 +315,8 @@ export class DatabaseStorage implements IStorage {
       // Multiple choice question
       const index = parseInt(answer);
       if (!isNaN(index) && Array.isArray(exercise.options)) {
-        // Accept either zero-based or one-based numbering in the database
-        correct =
-          index === exercise.correctOption ||
-          index === exercise.correctOption - 1;
+        // Convert the string answer to a number and compare directly
+        correct = index === exercise.correctOption;
       }
     } else if (exercise?.answer) {
       // Text-based question
