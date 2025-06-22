@@ -8,9 +8,8 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
-// Set default domain for development if REPLIT_DOMAINS is not provided
 if (!process.env.REPLIT_DOMAINS) {
-  process.env.REPLIT_DOMAINS = "127.0.0.1:5000";
+  throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
 
 const getOidcConfig = memoize(
@@ -103,20 +102,14 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    // Use the first domain from REPLIT_DOMAINS for simplicity
-    const domains = process.env.REPLIT_DOMAINS!.split(",");
-    const domain = domains[0];
-    passport.authenticate(`replitauth:${domain}`, {
+    passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    // Use the first domain from REPLIT_DOMAINS for simplicity
-    const domains = process.env.REPLIT_DOMAINS!.split(",");
-    const domain = domains[0];
-    passport.authenticate(`replitauth:${domain}`, {
+    passport.authenticate(`replitauth:${req.hostname}`, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
     })(req, res, next);
