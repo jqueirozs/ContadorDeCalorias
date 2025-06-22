@@ -119,6 +119,16 @@ export const behaviorReflections = pgTable("behavior_reflections", {
   sleptWell: boolean("slept_well"),
   managedStress: boolean("managed_stress"),
   avoidedEmotionalEating: boolean("avoided_emotional_eating"),
+  // Daily Balance Questions
+  chooseHealthyMeals: boolean("choose_healthy_meals"), // Selecionei, de modo saudável, minhas refeições
+  avoidRepeatingPlates: boolean("avoid_repeating_plates"), // Evitei repetir pratos e balanceei o volume de comida em cada refeição
+  hadEmotionalImpulses: boolean("had_emotional_impulses"), // Impulsos emocionais e internos prejudicaram a minha alimentação
+  hadEnvironmentalImpulses: boolean("had_environmental_impulses"), // Impulsos ambientais e externos prejudicaram a minha alimentação
+  evacuatedLast24h: boolean("evacuated_last_24h"), // Evacuei nas últimas 24 horas
+  hadBodySwelling: boolean("had_body_swelling"), // Tive inchaço em alguma região do meu corpo
+  avoidedSelfSabotage: boolean("avoided_self_sabotage"), // Evitei atitudes de autossabotagem
+  dayRating: integer("day_rating"), // Avaliação do dia (1-5 stars)
+  totalCalories: integer("total_calories"), // Total de calorias
   createdAt: timestamp("created_at").defaultNow(),
 });
 

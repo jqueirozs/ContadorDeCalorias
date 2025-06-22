@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
+import { ToggleButton } from "@/components/ui/toggle-button";
+import { StarRating } from "@/components/ui/star-rating";
 import { FlipHorizontal2, Save, CheckCircle } from "lucide-react";
 
 export default function Reflection() {
@@ -31,6 +33,16 @@ export default function Reflection() {
     sleptWell: null,
     managedStress: null,
     avoidedEmotionalEating: null,
+    // Daily Balance Questions
+    chooseHealthyMeals: null,
+    avoidRepeatingPlates: null,
+    hadEmotionalImpulses: null,
+    hadEnvironmentalImpulses: null,
+    evacuatedLast24h: null,
+    hadBodySwelling: null,
+    avoidedSelfSabotage: null,
+    dayRating: 3,
+    totalCalories: 0,
   });
 
   useEffect(() => {
@@ -108,6 +120,16 @@ export default function Reflection() {
         sleptWell: reflection.sleptWell,
         managedStress: reflection.managedStress,
         avoidedEmotionalEating: reflection.avoidedEmotionalEating,
+        // Daily Balance Questions
+        chooseHealthyMeals: reflection.chooseHealthyMeals,
+        avoidRepeatingPlates: reflection.avoidRepeatingPlates,
+        hadEmotionalImpulses: reflection.hadEmotionalImpulses,
+        hadEnvironmentalImpulses: reflection.hadEnvironmentalImpulses,
+        evacuatedLast24h: reflection.evacuatedLast24h,
+        hadBodySwelling: reflection.hadBodySwelling,
+        avoidedSelfSabotage: reflection.avoidedSelfSabotage,
+        dayRating: reflection.dayRating || 3,
+        totalCalories: reflection.totalCalories || 0,
       });
     }
   }, [reflection]);
@@ -127,6 +149,15 @@ export default function Reflection() {
       challenges: formData.challenges,
       achievements: formData.achievements,
       notes: formData.notes,
+      chooseHealthyMeals: formData.chooseHealthyMeals,
+      avoidRepeatingPlates: formData.avoidRepeatingPlates,
+      hadEmotionalImpulses: formData.hadEmotionalImpulses,
+      hadEnvironmentalImpulses: formData.hadEnvironmentalImpulses,
+      evacuatedLast24h: formData.evacuatedLast24h,
+      hadBodySwelling: formData.hadBodySwelling,
+      avoidedSelfSabotage: formData.avoidedSelfSabotage,
+      dayRating: formData.dayRating,
+      totalCalories: formData.totalCalories,
     });
   };
 
@@ -297,6 +328,147 @@ export default function Reflection() {
                       rows={5}
                       className="w-full"
                     />
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Daily Balance Section */}
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold text-neutral-800 mb-2">BALANÇO DIÁRIO</h3>
+                  <div className="flex items-center justify-center gap-4 mb-6">
+                    <div className="bg-neutral-800 text-white px-4 py-2 rounded">
+                      <span className="text-sm font-medium">TOTAL DE CALORIAS</span>
+                    </div>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="5000"
+                      value={formData.totalCalories}
+                      onChange={(e) => setFormData({ ...formData, totalCalories: parseInt(e.target.value) || 0 })}
+                      placeholder="0"
+                      className="w-32 text-center"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Alimentação Normal */}
+                  <Card>
+                    <CardHeader className="bg-neutral-100">
+                      <CardTitle className="text-center text-neutral-800">ALIMENTAÇÃO NORMAL</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-6">
+                      <div className="flex items-center justify-between gap-4">
+                        <ToggleButton
+                          value={formData.chooseHealthyMeals}
+                          onChange={(value) => setFormData({ ...formData, chooseHealthyMeals: value })}
+                        />
+                        <p className="text-sm text-neutral-700 flex-1">
+                          Selecionei, de modo saudável, minhas refeições
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <ToggleButton
+                          value={formData.avoidRepeatingPlates}
+                          onChange={(value) => setFormData({ ...formData, avoidRepeatingPlates: value })}
+                        />
+                        <p className="text-sm text-neutral-700 flex-1">
+                          Evitei repetir pratos e balanceei o volume de comida em cada refeição
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Metabolismo */}
+                  <Card>
+                    <CardHeader className="bg-neutral-100">
+                      <CardTitle className="text-center text-neutral-800">METABOLISMO</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-6">
+                      <div className="flex items-center justify-between gap-4">
+                        <ToggleButton
+                          value={formData.evacuatedLast24h}
+                          onChange={(value) => setFormData({ ...formData, evacuatedLast24h: value })}
+                        />
+                        <p className="text-sm text-neutral-700 flex-1">
+                          Evacuei nas últimas 24 horas
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <ToggleButton
+                          value={formData.hadBodySwelling}
+                          onChange={(value) => setFormData({ ...formData, hadBodySwelling: value })}
+                        />
+                        <p className="text-sm text-neutral-700 flex-1">
+                          Tive inchaço em alguma região do meu corpo
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Alimentação Impulsiva */}
+                  <Card>
+                    <CardHeader className="bg-neutral-100">
+                      <CardTitle className="text-center text-neutral-800">ALIMENTAÇÃO IMPULSIVA</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-6">
+                      <div className="flex items-center justify-between gap-4">
+                        <ToggleButton
+                          value={formData.hadEmotionalImpulses}
+                          onChange={(value) => setFormData({ ...formData, hadEmotionalImpulses: value })}
+                        />
+                        <p className="text-sm text-neutral-700 flex-1">
+                          Impulsos <strong>emocionais</strong> e <strong>internos</strong> prejudicaram a minha alimentação
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <ToggleButton
+                          value={formData.hadEnvironmentalImpulses}
+                          onChange={(value) => setFormData({ ...formData, hadEnvironmentalImpulses: value })}
+                        />
+                        <p className="text-sm text-neutral-700 flex-1">
+                          Impulsos <strong>ambientais</strong> e <strong>externos</strong> prejudicaram a minha alimentação
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Autocontrole */}
+                  <Card>
+                    <CardHeader className="bg-neutral-100">
+                      <CardTitle className="text-center text-neutral-800">AUTOCONTROLE</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-6">
+                      <div className="flex items-center justify-between gap-4">
+                        <ToggleButton
+                          value={formData.avoidedSelfSabotage}
+                          onChange={(value) => setFormData({ ...formData, avoidedSelfSabotage: value })}
+                        />
+                        <p className="text-sm text-neutral-700 flex-1">
+                          Evitei atitudes de autossabotagem
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Day Rating */}
+                <Card>
+                  <CardHeader className="bg-neutral-100">
+                    <CardTitle className="text-center text-neutral-800">AVALIAÇÃO DO DIA</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-center gap-4">
+                      <StarRating
+                        value={formData.dayRating}
+                        onChange={(value) => setFormData({ ...formData, dayRating: value })}
+                        className="justify-center"
+                      />
+                    </div>
+                    <p className="text-center text-sm text-neutral-600 mt-2">
+                      Como você avalia seu dia hoje?
+                    </p>
                   </CardContent>
                 </Card>
               </div>
