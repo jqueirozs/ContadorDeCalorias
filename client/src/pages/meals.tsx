@@ -7,10 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Plus, Search, Utensils, Camera, Edit } from "lucide-react";
+import { Plus, Clock, Calendar, Utensils, Coffee, Cookie, Edit } from "lucide-react";
 import NutrientDisplay from "@/components/ui/nutrient-display";
 import { CircularProgress } from "@/components/ui/circular-progress";
 import { Progress } from "@/components/ui/progress";
+import { Search, Camera } from "lucide-react";
 
 export default function Meals() {
   const { toast } = useToast();
@@ -89,14 +90,14 @@ export default function Meals() {
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-neutral-800">Registro de Refeições</h2>
-              <p className="text-neutral-600 mt-1">Acompanhe sua alimentação diária</p>
+              <h2 className="page-title text-neutral-800">Registro de Refeições</h2>
+              <p className="description-text mt-1">Acompanhe sua alimentação diária</p>
             </div>
             <Button
               onClick={() => setShowMealForm(true)}
               className="bg-primary hover:bg-primary/90"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 mr-2 stroke-[1.5]" />
               Nova Refeição
             </Button>
           </div>
@@ -114,7 +115,7 @@ export default function Meals() {
                 className="w-auto"
               />
             </div>
-            
+
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
               <Input
@@ -149,7 +150,7 @@ export default function Meals() {
                   />
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6 text-center">
                   <div className="text-2xl font-bold text-secondary">+{totalPointsToday}</div>
@@ -162,7 +163,7 @@ export default function Meals() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-3">
@@ -225,7 +226,7 @@ export default function Meals() {
                   <div className="space-y-6">
                     {["breakfast", "lunch", "snack", "dinner", "supper"].map((mealType) => {
                       const mealsOfType = mealsByType[mealType as keyof typeof mealsByType] as any[];
-                      
+
                       return (
                         <div key={mealType} className="border-l-2 border-neutral-200 pl-4">
                           <div className="flex items-center justify-between mb-2">
@@ -245,7 +246,7 @@ export default function Meals() {
                               {mealsOfType.length > 0 ? "Adicionar" : "Registrar"}
                             </Button>
                           </div>
-                          
+
                           {mealsOfType.length > 0 ? (
                             <div className="space-y-3">
                               {mealsOfType.map((meal: any, index: number) => (
@@ -272,7 +273,7 @@ export default function Meals() {
                                           )}
                                         </div>
                                         <p className="text-neutral-700 mb-2">{meal.foods}</p>
-                                        
+
                                         {/* Show nutrient information if available */}
                                         {(meal.calories || meal.protein || meal.carbohydrates || meal.fat) && (
                                           <div className="mt-3">
@@ -397,7 +398,7 @@ export default function Meals() {
         onClose={() => setShowMealForm(false)} 
         selectedDate={selectedDate}
         />
-      
+
       <MealForm 
         isOpen={!!editingMeal} 
         onClose={() => setEditingMeal(null)} 

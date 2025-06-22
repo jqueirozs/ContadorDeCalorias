@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 import { Progress } from "@/components/ui/progress";
 import { CircularProgress } from "@/components/ui/circular-progress";
-import { Brain, CheckCircle, Star, Target } from "lucide-react";
+import { Brain, CheckCircle, Star, Target, Award } from "lucide-react";
 
 export default function Exercises() {
   const { toast } = useToast();
@@ -51,7 +51,7 @@ export default function Exercises() {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       setIsCorrect(response.correct);
       setShowResult(true);
-      
+
       toast({
         title: response.correct ? "Correto! 🎉" : "Resposta incorreta",
         description: response.correct 
@@ -109,12 +109,12 @@ export default function Exercises() {
     setShowResult(false);
     setSelectedOptionIndex(null);
     setIsCorrect(false);
-    
+
     // Find next incomplete exercise
     const nextIndex = dailyExercises?.findIndex((ex: any, index: number) => 
       index > currentExerciseIndex && !ex.completedAt
     );
-    
+
     if (nextIndex !== -1) {
       setCurrentExerciseIndex(nextIndex);
     } else {
@@ -155,7 +155,7 @@ export default function Exercises() {
               />
             </div>
           </div>
-          
+
           <div className="mt-4">
             <Progress value={progressPercentage} className="h-2" />
             <p className="text-sm text-neutral-500 mt-2">
@@ -250,7 +250,7 @@ export default function Exercises() {
                         <p className="text-lg leading-relaxed text-neutral-800 mb-6">
                           {currentExercise.exercise.question}
                         </p>
-                        
+
                         {/* Opções de múltipla escolha */}
                         <div className="space-y-3">
                           {currentExercise.exercise.options?.map((option: string, index: number) => (

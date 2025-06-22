@@ -12,7 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { ToggleButton } from "@/components/ui/toggle-button";
 import { StarRating } from "@/components/ui/star-rating";
-import { FlipHorizontal2, Save, CheckCircle } from "lucide-react";
+import { Save, CheckCircle, Brain, Lightbulb } from "lucide-react";
 
 export default function Reflection() {
   const { toast } = useToast();
@@ -75,7 +75,7 @@ export default function Reflection() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/reflections"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
-      
+
       toast({
         title: reflection ? "Reflexão atualizada!" : "Reflexão salva!",
         description: reflection 
@@ -140,7 +140,7 @@ export default function Reflection() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     saveReflectionMutation.mutate({
       moodRating: formData.moodRating[0],
       hungerLevel: formData.hungerLevel[0],
@@ -513,7 +513,7 @@ export default function Reflection() {
                   disabled={saveReflectionMutation.isPending}
                   className="bg-primary hover:bg-primary/90 px-8"
                 >
-                  <Save className="w-4 h-4 mr-2" />
+                  <Save className="w-4 h-4 mr-2 stroke-[1.5]" />
                   {saveReflectionMutation.isPending 
                     ? "Salvando..." 
                     : reflection 

@@ -134,8 +134,8 @@ export default function Community() {
         <header className="bg-white shadow-sm border-b border-neutral-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-neutral-800">Comunidade</h2>
-              <p className="text-neutral-600 mt-1">Conecte-se e compartilhe sua jornada</p>
+              <h2 className="page-title text-neutral-800">Comunidade</h2>
+              <p className="description-text mt-1">Conecte-se e compartilhe sua jornada</p>
             </div>
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
