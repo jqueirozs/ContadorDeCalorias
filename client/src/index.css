@@ -179,7 +179,8 @@
 }
 
 .btn-primary:hover {
-  @apply bg-primary/90 shadow-md transform -translate-y-0.5;
+  @apply shadow-md transform -translate-y-0.5;
+  background-color: hsl(207, 90%, 48%);
 }
 
 .btn-secondary {
@@ -187,7 +188,8 @@
 }
 
 .btn-secondary:hover {
-  @apply bg-secondary/90 shadow-md transform -translate-y-0.5;
+  @apply shadow-md transform -translate-y-0.5;
+  background-color: hsl(142, 76%, 32%);
 }
 
 /* Animation for loading states */
