@@ -315,6 +315,7 @@ export class DatabaseStorage implements IStorage {
       // Multiple choice question
       const index = parseInt(answer);
       if (!isNaN(index) && Array.isArray(exercise.options)) {
+        // Convert the string answer to a number and compare directly
         correct = index === exercise.correctOption;
       }
     } else if (exercise?.answer) {
